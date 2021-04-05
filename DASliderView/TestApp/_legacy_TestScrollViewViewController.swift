@@ -23,7 +23,7 @@ class TestScrollViewViewController1111: UIViewController, UIGestureRecognizerDel
         return CGFloat(view.frame.width/2) - padding + CGFloat(sliderBookSize.width/2)
     }
     
-    var currentPosition = 2
+    var currentPosition = 0
     var centers: [CGPoint]!
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {

@@ -25,6 +25,7 @@ internal protocol LayoutManager {
     var movingFactor: CGFloat { get }
     var position: Int { get set }
     var items: [DAItemView] { get }
+    var type: DASliderViewLayoutManager { get }
 }
 
 internal class AbstractLayoutManager {
@@ -48,6 +49,16 @@ internal class AbstractLayoutManager {
     let sliderView: DASliderViewImpl
     var lastItemPosition: [CGPoint]!
     
+    var rootView: UIView {
+        var view: UIView? = sliderView
+        
+        while true {
+            if view?.superview != nil {
+                view = view?.superview
+            } else { return view! }
+        }
+    }
+    
     func direction(of translation: CGPoint) -> DASliderViewDirection {
         return translation.x > 0 ? .left : .right
     }
@@ -62,6 +73,7 @@ internal class LeftBoundItemLayoutManager : AbstractLayoutManager, LayoutManager
     
     internal var initialMargin: CGFloat = 10
     internal var leftMargin: CGFloat = 25
+    var type: DASliderViewLayoutManager = .leftBound
     
     var movingFactor: CGFloat {
         return itemSize.width + (leftMargin * 1)
@@ -180,8 +192,10 @@ internal class LeftBoundItemLayoutManager : AbstractLayoutManager, LayoutManager
 
 internal class CenteredItemLayoutManager : AbstractLayoutManager, LayoutManager {
     
+    var type: DASliderViewLayoutManager = .centered
+    
     var movingFactor: CGFloat {
-        return CGFloat(sliderView.parentView.frame.width/2)
+        return CGFloat(sliderView.frame.size.width/2)
             - padding
             + CGFloat(itemSize.width/2)
     }
@@ -190,6 +204,8 @@ internal class CenteredItemLayoutManager : AbstractLayoutManager, LayoutManager 
         
         var precedingItem: DAItemView!
         
+        print("superview width: \(rootView.frame.width) sliderView width: \(sliderView.frame.width) bounds=\(sliderView.bounds)")
+        
         for i in 0 ..< items.count {
             
             let item = items[i]
@@ -197,21 +213,20 @@ internal class CenteredItemLayoutManager : AbstractLayoutManager, LayoutManager 
             
             let x: CGFloat
             if i == 0 {
-                x = (sliderView.parentView.frame.width/2) - (itemSize.width/2)
+                x = (sliderView.frame.size.width/2) - (itemSize.width/2)
             }
             else {
                 let precX = precedingItem.view.frame.origin.x
-                x = precX + (sliderView.parentView.frame.width/2) + (itemSize.width/2) - padding
+                x = precX + movingFactor
             }
             
             item.view.frame = CGRect(x: x, y: 0, width: itemSize.width, height: itemSize.height)
             item.view.tag = i
             precedingItem = item
-            
         }
         
         lastItemPosition = items.map { $0.view.center }
-        self.position = position
+        //self.position = position
         scrollTo(position, animated: sliderView.animationEnabled)
     }
     

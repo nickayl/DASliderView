@@ -66,9 +66,13 @@ class ViewController: UIViewController,
         sliderView.superviewCanInterceptTouchEvents = true
         sliderView.setItemsPadding(25)
         sliderView.setMinimumDragToScroll(sliderView.frame.width/5)
+        
+        sliderView.frame.size = CGSize(width: view.frame.width, height: view.frame.height)
+        sliderView.layoutManager = .centered
+        
         //try? sliderView.setPosition(newPosition: 1)
         
-        sliderView.initialize(withPosition: 0)
+        sliderView.initialize(withPosition: 1)
         
         print("SliderView started at position: \(sliderView.currentPosition)")
     }

@@ -15,7 +15,15 @@ public class DASliderViewImpl : UIView, DASliderView {
     
     public var currentPosition: Int { return position }
     public var selectedItem: DAItemView { return items[position] }
-    public var layoutManager: DASliderViewLayoutManager = .centered
+    public var layoutManager: DASliderViewLayoutManager {
+        set {
+            if newValue == .centered { __layoutManager = CenteredItemLayoutManager(with: self) }
+            else { __layoutManager = LeftBoundItemLayoutManager(with: self) }
+        }
+        get {
+            __layoutManager.type
+        }
+    }
     public var animationEnabled: Bool = true
    
     public var superviewCanInterceptTouchEvents: Bool = true
@@ -46,13 +54,15 @@ public class DASliderViewImpl : UIView, DASliderView {
             minimumDragToScroll = defaultMinimumDragToScroll
         }
         
+        if __layoutManager == nil {
+            layoutManager = .centered
+        }
+        
         for i in 0 ..< dataSource!.numberOfItems(of: self) {
             let item = dataSource!.viewForItem(at: i, recycling: nil, sliderView: self)
             items.append(item)
         }
         
-        // __layoutManager = CenteredItemLayoutManager(with: self)
-        __layoutManager = LeftBoundItemLayoutManager(with: self)
         __layoutManager.applyLayout(position: position)
         
         for item in items {
