@@ -10,7 +10,10 @@
 An nice and clean way to display your views as a set of sliding views. 
 Easy to use: requires only little configuration and you are ready to start!
 
-<center><img src="https://github.com/cyclonesword/DASliderView/blob/master/screen1.png?raw=true" width="276" height="598"></center>
+<center>
+	<img src="https://github.com/cyclonesword/DASliderView/blob/master/screen1.png?raw=true" width="276" height="598">
+	https://user-images.githubusercontent.com/4295348/113738518-4433bb80-96ff-11eb-9450-2d64ca6ab8a8.mov
+</center>
 
 ## Requirements
 
