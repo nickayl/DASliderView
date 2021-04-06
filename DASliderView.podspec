@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "DASliderView"
-  spec.version      = "1.0"
+  spec.version      = "1.0.RC"
   spec.summary      = "An nice and clean way to display your views as a set of sliding views"
 
   # This description is used to generate tags and improve search results.
@@ -28,7 +28,7 @@ Pod::Spec.new do |spec|
             An nice and clean way to display your views as a set of sliding views
                    DESC
 
-  spec.homepage     = "https://github.com/cyclonesword/DASliderView.git"
+  spec.homepage     = "https://github.com/cyclonesword/DASliderView"
   # spec.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
