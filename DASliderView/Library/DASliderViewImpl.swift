@@ -49,10 +49,9 @@ public class DASliderView : UIView {
     internal var parentView: UIView { return superview ?? self }
     // ==
 
-    
     public func initialize() { initialize(withPosition: 0, properties: defaultProperties) }
     
-    public func initialize(withPosition position: Int, properties: [String : CGFloat]) {
+    public func initialize(withPosition position: Int, properties: [String : CGFloat] = [:]) {
         if dataSource == nil {
             print("Sliderview initialized with nil dataSource! You will see nothing until you set the delegate to the sliderView. "); return
         }
