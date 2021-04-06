@@ -27,7 +27,7 @@ class ViewController: UIViewController,
                                       DASliderViewDataSouce,
                                       DASliderViewDelegate {
     
-    @IBOutlet var sliderView: DASliderViewImpl!
+    @IBOutlet var sliderView: DASliderView!
     @IBOutlet var scrollView: UIScrollView!
     
     @IBOutlet weak var positionTextField: UITextField!
@@ -43,11 +43,11 @@ class ViewController: UIViewController,
     }
     
     @IBAction func goLeft(_ sender: Any) {
-        try? sliderView.setPosition(newPosition: sliderView.currentPosition-1)
+        try? sliderView.setPosition(newPosition: sliderView.currentPosition-1, animated: animatedSwitch.isOn)
     }
     
     @IBAction func goRight(_ sender: Any) {
-        try? sliderView.setPosition(newPosition: sliderView.currentPosition+1)
+        try? sliderView.setPosition(newPosition: sliderView.currentPosition+1, animated: animatedSwitch.isOn)
     }
     
     let images = [ UIImage(named: "b2"), UIImage(named: "b3"), UIImage(named: "b1"), UIImage(named: "b4"), UIImage(named: "b5") ]
@@ -59,20 +59,30 @@ class ViewController: UIViewController,
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        sliderView.frame.size = CGSize(width: view.frame.width, height: view.frame.height)
+        
         sliderView.dataSource = self
         sliderView.delegate = self
         
         sliderView.gestureRecognizerDelegate = self
         sliderView.superviewCanInterceptTouchEvents = true
-        sliderView.setItemsPadding(25)
-        sliderView.setMinimumDragToScroll(sliderView.frame.width/5)
         
-        sliderView.frame.size = CGSize(width: view.frame.width, height: view.frame.height)
-        sliderView.layoutManager = .centered
+//        sliderView.setItemsPadding(25)
+//        sliderView.setMinimumDragToScroll(sliderView.frame.width/5)
         
         //try? sliderView.setPosition(newPosition: 1)
         
-        sliderView.initialize(withPosition: 1)
+//        let props = [ sliderView.kPadding : CGFloat(20),
+//                      sliderView.kMinDragToScroll : view.frame.width/4 ]
+//        sliderView.layoutManager = .centered
+        
+        let props = [ sliderView.kMargin : CGFloat(25),
+                      sliderView.kInitialMargin : CGFloat(10),
+                      sliderView.kMinDragToScroll : view.frame.width/4 ]
+        sliderView.layoutManager = .leftBound
+        sliderView.animationEnabled = false
+        sliderView.initialize(withPosition: 1, properties: props)
+        sliderView.animationEnabled = true
         
         print("SliderView started at position: \(sliderView.currentPosition)")
     }

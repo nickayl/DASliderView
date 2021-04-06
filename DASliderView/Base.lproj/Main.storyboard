@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ypg-n5-vlY">
-    <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -13,14 +12,14 @@
             <objects>
                 <viewController id="O42-hZ-pRl" customClass="ViewController" customModule="DASliderView" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Dg1-fE-rWf">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ROZ-p3-oVT">
-                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FtF-09-wQZ" customClass="DASliderViewImpl" customModule="DASliderView" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="246" width="414" height="300"/>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FtF-09-wQZ" customClass="DASliderView" customModule="DASliderView" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="246" width="600" height="300"/>
                                         <color key="backgroundColor" systemColor="systemOrangeColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="300" id="UUo-ay-fd0"/>
@@ -63,7 +62,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bPF-Be-IrA">
-                                        <rect key="frame" x="369" y="198" width="36" height="30"/>
+                                        <rect key="frame" x="555" y="198" width="36" height="30"/>
                                         <state key="normal" title="Right"/>
                                         <connections>
                                             <action selector="goRight:" destination="O42-hZ-pRl" eventType="touchUpInside" id="MI8-us-LB2"/>
@@ -98,7 +97,7 @@
                                 <viewLayoutGuide key="frameLayoutGuide" id="s8p-0Y-jgb"/>
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NXc-al-sxs">
-                                <rect key="frame" x="192" y="236" width="30" height="30"/>
+                                <rect key="frame" x="285" y="192" width="30" height="30"/>
                                 <state key="normal" title="Go!"/>
                                 <connections>
                                     <action selector="goToPositionAction:" destination="O42-hZ-pRl" eventType="touchUpInside" id="kcf-cN-LTc"/>
@@ -136,18 +135,18 @@
             <objects>
                 <viewController id="Ypg-n5-vlY" customClass="ViewController" customModule="DASliderView" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="7TH-oS-8gK">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tmS-Nr-IW5" customClass="DASliderViewImpl" customModule="DASliderView" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="298" width="414" height="300"/>
+                            <view contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tmS-Nr-IW5" customClass="DASliderView" customModule="DASliderView" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="150" width="600" height="300"/>
                                 <color key="backgroundColor" systemColor="systemOrangeColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="300" id="CDl-gw-J6i"/>
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="brO-cL-boX">
-                                <rect key="frame" x="8" y="145" width="30" height="30"/>
+                                <rect key="frame" x="8" y="101" width="30" height="30"/>
                                 <state key="normal" title="Left"/>
                                 <connections>
                                     <action selector="goLeft:" destination="O42-hZ-pRl" eventType="touchUpInside" id="Bcd-4o-bHN"/>
@@ -155,7 +154,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pyU-Wl-Czr">
-                                <rect key="frame" x="370" y="145" width="36" height="30"/>
+                                <rect key="frame" x="556" y="101" width="36" height="30"/>
                                 <state key="normal" title="Right"/>
                                 <connections>
                                     <action selector="goRight:" destination="Ypg-n5-vlY" eventType="touchUpInside" id="16d-Bx-cZ5"/>
@@ -163,7 +162,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZiK-0k-kdk">
-                                <rect key="frame" x="192" y="145" width="30" height="30"/>
+                                <rect key="frame" x="285" y="101" width="30" height="30"/>
                                 <state key="normal" title="Go!"/>
                                 <connections>
                                     <action selector="goToPositionAction:" destination="Ypg-n5-vlY" eventType="touchUpInside" id="HuL-3P-mpz"/>
@@ -171,21 +170,21 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="animated:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z7q-fl-sbU">
-                                <rect key="frame" x="93" y="105.33333333333333" width="76" height="18.333333333333329"/>
+                                <rect key="frame" x="93" y="61" width="76" height="19"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dtz-41-Iao">
-                                <rect key="frame" x="183" y="99" width="50" height="31"/>
+                                <rect key="frame" x="183" y="55" width="236" height="31"/>
                             </switch>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="9Yd-4S-ffL">
-                                <rect key="frame" x="191" y="57" width="32" height="34"/>
+                                <rect key="frame" x="284" y="13" width="32" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Go to position:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sXs-gL-48S">
-                                <rect key="frame" x="68" y="62.666666666666664" width="111" height="22.666666666666664"/>
+                                <rect key="frame" x="161" y="19" width="111" height="22"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>

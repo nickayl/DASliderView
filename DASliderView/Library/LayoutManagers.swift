@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 
-
 internal protocol LayoutManager {
     
     func scrollBegan()
@@ -25,6 +24,7 @@ internal protocol LayoutManager {
     var movingFactor: CGFloat { get }
     var position: Int { get set }
     var items: [DAItemView] { get }
+    var properties: [String:CGFloat] { get }
     var type: DASliderViewLayoutManager { get }
 }
 
@@ -40,13 +40,14 @@ internal class AbstractLayoutManager {
         get { sliderView.position }
     }
     
+    var properties: [String : CGFloat] = [:]
     var items: [DAItemView] { sliderView.items }
     var delegate: DASliderViewDelegate? { sliderView.delegate }
     var padding: CGFloat { sliderView.padding }
     var minimumDragToScroll:CGFloat { sliderView.minimumDragToScroll }
     var itemSize: CGSize { sliderView.dataSource!.sizeForItem(at: position, sliderView: sliderView) }
     
-    let sliderView: DASliderViewImpl
+    let sliderView: DASliderView
     var lastItemPosition: [CGPoint]!
     
     var rootView: UIView {
@@ -63,16 +64,17 @@ internal class AbstractLayoutManager {
         return translation.x > 0 ? .left : .right
     }
     
-    init(with sliderView: DASliderViewImpl) {
+    init(with sliderView: DASliderView) {
         self.sliderView = sliderView
     }
     
 }
 
 internal class LeftBoundItemLayoutManager : AbstractLayoutManager, LayoutManager {
+
+    internal var initialMargin: CGFloat { sliderView.initialMargin }
+    internal var leftMargin: CGFloat { sliderView.margin }
     
-    internal var initialMargin: CGFloat = 10
-    internal var leftMargin: CGFloat = 25
     var type: DASliderViewLayoutManager = .leftBound
     
     var movingFactor: CGFloat {
@@ -104,8 +106,8 @@ internal class LeftBoundItemLayoutManager : AbstractLayoutManager, LayoutManager
         }
         
         lastItemPosition = items.map { $0.view.center }
-        self.position = position
-        //scrollTo(position, animated: sliderView.animationEnabled)
+        //self.position = position
+        scrollTo(position, animated: sliderView.animationEnabled)
     }
     
     func scrollBegan() {

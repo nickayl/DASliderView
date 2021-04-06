@@ -8,8 +8,8 @@
 import Foundation
 import UIKit
 
-public class DASliderViewImpl : UIView, DASliderView {
-    
+public class DASliderView : UIView {
+
     public var delegate: DASliderViewDelegate?
     public var dataSource: DASliderViewDataSouce?
     
@@ -28,30 +28,46 @@ public class DASliderViewImpl : UIView, DASliderView {
    
     public var superviewCanInterceptTouchEvents: Bool = true
     public var gestureRecognizerDelegate: UIGestureRecognizerDelegate?
-
-    // Actual values ===
-    internal var padding = CGFloat(25)
-    internal var minimumDragToScroll: CGFloat = -1
+    public var properties: [String : CGFloat]!
+    
+    // ==== kProperties and private fields
+    public let kPadding = DASliderViewProperty.padding.rawValue
+    public let kMargin = DASliderViewProperty.margin.rawValue
+    public let kInitialMargin = DASliderViewProperty.initialMargin.rawValue
+    public let kMinDragToScroll = DASliderViewProperty.minDragToScroll.rawValue
+    
+    private var __layoutManager: LayoutManager!
+    private var defaultProperties: [String : CGFloat]!
+    
+    internal var padding: CGFloat { properties[kPadding]! }
+    internal var minimumDragToScroll: CGFloat { properties[kMinDragToScroll]! }
+    internal var margin: CGFloat { properties[kMargin]! }
+    internal var initialMargin: CGFloat { properties[kInitialMargin]! }
+    
     internal var position: Int = 0
     internal var items: [DAItemView] = []
     internal var parentView: UIView { return superview ?? self }
+    // ==
+
     
-    private var __layoutManager: LayoutManager!
-    // Default values ===
-    private let defaultPadding = CGFloat(25)
-    private var defaultMinimumDragToScroll: CGFloat = -1
-    // ====
-   
-    public func initialize() { initialize(withPosition: 0) }
+    public func initialize() { initialize(withPosition: 0, properties: defaultProperties) }
     
-    public func initialize(withPosition position: Int) {
+    public func initialize(withPosition position: Int, properties: [String : CGFloat]) {
         if dataSource == nil {
             print("Sliderview initialized with nil dataSource! You will see nothing until you set the delegate to the sliderView. "); return
         }
-        defaultMinimumDragToScroll = frame.width / 4
         
-        if minimumDragToScroll == -1 {
-            minimumDragToScroll = defaultMinimumDragToScroll
+        defaultProperties = [ kPadding : CGFloat(25), kMinDragToScroll : frame.width/4 ]
+        
+        if properties.isEmpty {
+            self.properties = defaultProperties
+        } else if layoutManager == .centered {
+            self.properties = [ kPadding         : properties[kPadding] ?? defaultProperties[kPadding]!,
+                                kMinDragToScroll : properties[kMinDragToScroll] ?? defaultProperties [kMinDragToScroll]!]
+        } else if layoutManager == .leftBound {
+            self.properties = [ kMargin         : properties[kMargin] ?? defaultProperties[kMargin]!,
+                                kInitialMargin         : properties[kInitialMargin] ?? defaultProperties[kInitialMargin]!,
+                                kMinDragToScroll : properties[kMinDragToScroll] ?? defaultProperties [kMinDragToScroll]!]
         }
         
         if __layoutManager == nil {
@@ -99,12 +115,12 @@ public class DASliderViewImpl : UIView, DASliderView {
     }
     
     public func setItemsPadding(_ padding: CGFloat) {
-        self.padding = padding < 0 ? defaultPadding : padding
+        self.properties[kPadding] = padding < 0 ? defaultProperties[kPadding]! : padding
     }
     
     public func setMinimumDragToScroll(_ amount: CGFloat) {
-        if amount > defaultMinimumDragToScroll {
-            self.minimumDragToScroll = amount
+        if amount > defaultProperties[ kMinDragToScroll ]! {
+            self.properties[ kMinDragToScroll ] = amount
         }
     }
     
