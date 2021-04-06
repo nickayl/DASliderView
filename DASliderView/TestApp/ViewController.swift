@@ -101,7 +101,7 @@ class ViewController: UIViewController,
     }
     
     func sliderViewDidScroll(sliderView: DASliderView) {
-        //print("Scollllll")
+        print("Scroll...")
     }
     
     func viewForItem(at position: Int, recycling convertView: DAItemView?, sliderView: DASliderView) -> DAItemView {

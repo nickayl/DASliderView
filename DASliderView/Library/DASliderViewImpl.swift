@@ -57,7 +57,7 @@ public class DASliderView : UIView {
             print("Sliderview initialized with nil dataSource! You will see nothing until you set the delegate to the sliderView. "); return
         }
         
-        defaultProperties = [ kPadding : CGFloat(25), kMinDragToScroll : frame.width/4 ]
+        defaultProperties = [ kPadding : CGFloat(25), kMinDragToScroll : frame.width/4, kMargin: CGFloat(25), kInitialMargin: CGFloat(0) ]
         
         if properties.isEmpty {
             self.properties = defaultProperties
