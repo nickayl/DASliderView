@@ -1,7 +1,7 @@
 
 # DASliderView
 
-![Cocoapods platforms](https://img.shields.io/cocoapods/p/ParlaKit.svg?color=%23fb0006)
+![Cocoapods platforms](https://img.shields.io/cocoapods/p/DASliderView.svg?color=%23fb0006)
 ![Cocoapods](https://img.shields.io/badge/language-swift%205.0-red.svg)
 ![Cocoapods](https://img.shields.io/cocoapods/v/DASliderView.svg?color=green)
 ![Maintenance](https://img.shields.io/maintenance/yes/2021.svg)
@@ -22,7 +22,7 @@ Easy to use: requires only little configuration and you are ready to start!
 ## Installation
 ### CocoaPods
 
-Just add the ParlaKit dependency to your Podfile:
+Just add the DASliderView dependency to your Podfile:
 ```cocoapods
   pod 'DASliderView'
   use_frameworks!
