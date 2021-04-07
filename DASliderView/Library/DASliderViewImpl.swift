@@ -58,7 +58,7 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         }
         
         defaultProperties = [ kPadding : CGFloat(25), kMinDragToScroll : frame.width/4, kMargin: CGFloat(25), kInitialMargin: CGFloat(0) ]
-        
+        gestureRecognizerDelegate = gestureRecognizerDelegate ?? self
         if properties.isEmpty {
             self.properties = defaultProperties
         } else if layoutManager == .centered {
@@ -154,49 +154,11 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         //print("Tap on view: tag=\(item.view.tag), position=\(item.position)")
     }
     
-    private var startX: CGFloat = 0
-    private var endX: CGFloat = 0
-    private var translation: CGPoint!
-    
-//    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        startX = touches.first!.location(in: self).x
-//        print("startX=\(startX)")
-//        __layoutManager.scrollBegan()
-//    }
-//
-//    public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        let curX = touches.first!.location(in: self).x
-//        //let translation = CGPoint(x: -(startX - curX), y: 0)
-//        print("curX = \(curX),translationX=\(translation.x)")
-//        translation.x = -(startX - curX)
-//        __layoutManager.scrollChanged(translation)
-//    }
-//
-//    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        endX = touches.first!.location(in: self).x
-//        //let translation = CGPoint(x: -(startX - endX), y: 0)
-//        __layoutManager.scrollEnded(translation)
-//        print("endX=\(endX)")
-//    }
-//
-//    public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        print("Touch canceled")
-//        endX = touches.first!.location(in: self).x
-//        //let translation = CGPoint(x: -(startX - endX), y: 0)
-//        __layoutManager.scrollEnded(translation)
-//    }
-
     @objc private func panGestureHandler(gestureRecognizer: UIPanGestureRecognizer) {
-        
         
         if dataSource == nil { return }
         
         let touchedView = gestureRecognizer.view!
-        
-        if touchedView is UIScrollView {
-            print("touched scroll view!!!!!")
-            return
-        }
         
         let translation = gestureRecognizer.translation(in: touchedView.superview)
         //let velocity = gestureRecognizer.velocity(in: piece.superview)
@@ -231,7 +193,41 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         super.init(frame: frame)
     }
     
-//    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-//        return true
-//    }
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
 }
+
+
+
+//private var startX: CGFloat = 0
+//private var endX: CGFloat = 0
+//private var translation: CGPoint!
+
+//    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        startX = touches.first!.location(in: self).x
+//        print("startX=\(startX)")
+//        __layoutManager.scrollBegan()
+//    }
+//
+//    public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        let curX = touches.first!.location(in: self).x
+//        //let translation = CGPoint(x: -(startX - curX), y: 0)
+//        print("curX = \(curX),translationX=\(translation.x)")
+//        translation.x = -(startX - curX)
+//        __layoutManager.scrollChanged(translation)
+//    }
+//
+//    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        endX = touches.first!.location(in: self).x
+//        //let translation = CGPoint(x: -(startX - endX), y: 0)
+//        __layoutManager.scrollEnded(translation)
+//        print("endX=\(endX)")
+//    }
+//
+//    public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        print("Touch canceled")
+//        endX = touches.first!.location(in: self).x
+//        //let translation = CGPoint(x: -(startX - endX), y: 0)
+//        __layoutManager.scrollEnded(translation)
+//    }
