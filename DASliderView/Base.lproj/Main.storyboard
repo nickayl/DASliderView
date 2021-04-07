@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ypg-n5-vlY">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="O42-hZ-pRl">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -12,14 +13,14 @@
             <objects>
                 <viewController id="O42-hZ-pRl" customClass="ViewController" customModule="DASliderView" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Dg1-fE-rWf">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ROZ-p3-oVT">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FtF-09-wQZ" customClass="DASliderView" customModule="DASliderView" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="246" width="600" height="300"/>
+                                        <rect key="frame" x="0.0" y="246" width="414" height="300"/>
                                         <color key="backgroundColor" systemColor="systemOrangeColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="300" id="UUo-ay-fd0"/>
@@ -62,12 +63,19 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bPF-Be-IrA">
-                                        <rect key="frame" x="555" y="198" width="36" height="30"/>
+                                        <rect key="frame" x="369" y="198" width="36" height="30"/>
                                         <state key="normal" title="Right"/>
                                         <connections>
                                             <action selector="goRight:" destination="O42-hZ-pRl" eventType="touchUpInside" id="MI8-us-LB2"/>
                                         </connections>
                                     </button>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Mgj-N8-ah8" customClass="DASliderView" customModule="DASliderView" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="554" width="414" height="300"/>
+                                        <color key="backgroundColor" systemColor="systemOrangeColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="300" id="TH2-ZT-Eg4"/>
+                                        </constraints>
+                                    </view>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="FtF-09-wQZ" firstAttribute="top" secondItem="g31-7A-qWX" secondAttribute="bottom" constant="18" id="2IK-dW-0Fv"/>
@@ -77,6 +85,7 @@
                                     <constraint firstItem="g31-7A-qWX" firstAttribute="leading" secondItem="s8p-0Y-jgb" secondAttribute="leading" constant="8" id="F0T-7H-slS"/>
                                     <constraint firstItem="s8p-0Y-jgb" firstAttribute="trailing" secondItem="omD-Rn-73W" secondAttribute="trailing" constant="144" id="FMY-Y1-twm"/>
                                     <constraint firstItem="FtF-09-wQZ" firstAttribute="centerX" secondItem="ROZ-p3-oVT" secondAttribute="centerX" id="InF-ai-aQx"/>
+                                    <constraint firstItem="Mgj-N8-ah8" firstAttribute="top" secondItem="FtF-09-wQZ" secondAttribute="bottom" constant="8" symbolic="YES" id="Jw2-bE-Syh"/>
                                     <constraint firstItem="FtF-09-wQZ" firstAttribute="leading" secondItem="ROZ-p3-oVT" secondAttribute="leading" id="KJu-jb-j1A"/>
                                     <constraint firstItem="VxJ-Tg-hMy" firstAttribute="leading" secondItem="s8p-0Y-jgb" secondAttribute="leading" constant="92" id="Ptl-ow-P3q"/>
                                     <constraint firstItem="VxJ-Tg-hMy" firstAttribute="centerY" secondItem="omD-Rn-73W" secondAttribute="centerY" id="QHQ-sq-knf"/>
@@ -86,18 +95,20 @@
                                     <constraint firstItem="omD-Rn-73W" firstAttribute="leading" secondItem="VxJ-Tg-hMy" secondAttribute="trailing" constant="14.5" id="XtZ-Cj-QFz"/>
                                     <constraint firstItem="iBX-dd-nhq" firstAttribute="top" secondItem="s8p-0Y-jgb" secondAttribute="top" constant="79" id="akA-QH-gfc"/>
                                     <constraint firstAttribute="trailing" secondItem="omD-Rn-73W" secondAttribute="trailing" constant="144" id="h8P-PC-rrr"/>
+                                    <constraint firstItem="Mgj-N8-ah8" firstAttribute="trailing" secondItem="s8p-0Y-jgb" secondAttribute="trailing" id="hWT-lE-TDe"/>
                                     <constraint firstItem="VxJ-Tg-hMy" firstAttribute="top" secondItem="wSd-h1-gOw" secondAttribute="bottom" constant="20" id="hYO-hK-oa1"/>
                                     <constraint firstItem="s8p-0Y-jgb" firstAttribute="trailing" secondItem="bPF-Be-IrA" secondAttribute="trailing" constant="9" id="ivx-3J-nIB"/>
                                     <constraint firstItem="omD-Rn-73W" firstAttribute="top" secondItem="iBX-dd-nhq" secondAttribute="bottom" constant="8" id="mBE-mw-c3m"/>
                                     <constraint firstItem="FtF-09-wQZ" firstAttribute="top" secondItem="bPF-Be-IrA" secondAttribute="bottom" constant="18" id="mEq-0u-nP8"/>
                                     <constraint firstItem="iBX-dd-nhq" firstAttribute="centerX" secondItem="omD-Rn-73W" secondAttribute="centerX" id="pF6-Mn-inc"/>
+                                    <constraint firstItem="Mgj-N8-ah8" firstAttribute="leading" secondItem="s8p-0Y-jgb" secondAttribute="leading" id="sYY-BV-5AG"/>
                                     <constraint firstItem="wSd-h1-gOw" firstAttribute="top" secondItem="s8p-0Y-jgb" secondAttribute="top" constant="85" id="yR9-o6-K6g"/>
                                 </constraints>
                                 <viewLayoutGuide key="contentLayoutGuide" id="BiY-fa-a9p"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="s8p-0Y-jgb"/>
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NXc-al-sxs">
-                                <rect key="frame" x="285" y="192" width="30" height="30"/>
+                                <rect key="frame" x="192" y="236" width="30" height="30"/>
                                 <state key="normal" title="Go!"/>
                                 <connections>
                                     <action selector="goToPositionAction:" destination="O42-hZ-pRl" eventType="touchUpInside" id="kcf-cN-LTc"/>
@@ -124,6 +135,7 @@
                         <outlet property="rightButton" destination="bPF-Be-IrA" id="Ziq-Yb-1m1"/>
                         <outlet property="scrollView" destination="ROZ-p3-oVT" id="6d5-L9-n6q"/>
                         <outlet property="sliderView" destination="FtF-09-wQZ" id="oud-jy-AzC"/>
+                        <outlet property="sliderView2" destination="Mgj-N8-ah8" id="Y0V-RF-BK1"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="w3J-mN-sdz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -135,18 +147,18 @@
             <objects>
                 <viewController id="Ypg-n5-vlY" customClass="ViewController" customModule="DASliderView" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="7TH-oS-8gK">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tmS-Nr-IW5" customClass="DASliderView" customModule="DASliderView" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="150" width="600" height="300"/>
+                                <rect key="frame" x="0.0" y="298" width="414" height="300"/>
                                 <color key="backgroundColor" systemColor="systemOrangeColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="300" id="CDl-gw-J6i"/>
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="brO-cL-boX">
-                                <rect key="frame" x="8" y="101" width="30" height="30"/>
+                                <rect key="frame" x="8" y="145" width="30" height="30"/>
                                 <state key="normal" title="Left"/>
                                 <connections>
                                     <action selector="goLeft:" destination="O42-hZ-pRl" eventType="touchUpInside" id="Bcd-4o-bHN"/>
@@ -154,7 +166,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pyU-Wl-Czr">
-                                <rect key="frame" x="556" y="101" width="36" height="30"/>
+                                <rect key="frame" x="370" y="145" width="36" height="30"/>
                                 <state key="normal" title="Right"/>
                                 <connections>
                                     <action selector="goRight:" destination="Ypg-n5-vlY" eventType="touchUpInside" id="16d-Bx-cZ5"/>
@@ -162,7 +174,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZiK-0k-kdk">
-                                <rect key="frame" x="285" y="101" width="30" height="30"/>
+                                <rect key="frame" x="192" y="145" width="30" height="30"/>
                                 <state key="normal" title="Go!"/>
                                 <connections>
                                     <action selector="goToPositionAction:" destination="Ypg-n5-vlY" eventType="touchUpInside" id="HuL-3P-mpz"/>
@@ -170,21 +182,21 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="animated:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z7q-fl-sbU">
-                                <rect key="frame" x="93" y="61" width="76" height="19"/>
+                                <rect key="frame" x="93" y="105" width="76" height="19"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dtz-41-Iao">
-                                <rect key="frame" x="183" y="55" width="236" height="31"/>
+                                <rect key="frame" x="183" y="99" width="50" height="31"/>
                             </switch>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="9Yd-4S-ffL">
-                                <rect key="frame" x="284" y="13" width="32" height="34"/>
+                                <rect key="frame" x="191" y="57" width="32" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Go to position:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sXs-gL-48S">
-                                <rect key="frame" x="161" y="19" width="111" height="22"/>
+                                <rect key="frame" x="68" y="63" width="111" height="22"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>

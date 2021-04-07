@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-public class DASliderView : UIView {
+public class DASliderView : UIView, UIGestureRecognizerDelegate {
 
     public var delegate: DASliderViewDelegate?
     public var dataSource: DASliderViewDataSouce?
@@ -26,7 +26,7 @@ public class DASliderView : UIView {
     }
     public var animationEnabled: Bool = true
    
-    public var superviewCanInterceptTouchEvents: Bool = true
+    //public var superviewCanInterceptTouchEvents: Bool = true
     public var gestureRecognizerDelegate: UIGestureRecognizerDelegate?
     public var properties: [String : CGFloat]!
     
@@ -35,6 +35,7 @@ public class DASliderView : UIView {
     public let kMargin = DASliderViewProperty.margin.rawValue
     public let kInitialMargin = DASliderViewProperty.initialMargin.rawValue
     public let kMinDragToScroll = DASliderViewProperty.minDragToScroll.rawValue
+    public var panGestureViews: UIView?
     
     private var __layoutManager: LayoutManager!
     private var defaultProperties: [String : CGFloat]!
@@ -84,6 +85,9 @@ public class DASliderView : UIView {
             // Item view gesture detection ========
             let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapGestureRecognizer(gestureRecognizer:)))
             let longTouchGesture = UILongPressGestureRecognizer(target: self, action:#selector(longTouchGestureRecognizer(gestureRecognizer:)))
+            longTouchGesture.minimumPressDuration = 0.7
+            longTouchGesture.allowableMovement = 3.0
+            
             item.view.addGestureRecognizer(tapGesture)
             item.view.addGestureRecognizer(longTouchGesture)
             // =====
@@ -92,12 +96,14 @@ public class DASliderView : UIView {
         }
         
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(gestureRecognizer:)))
-        self.addGestureRecognizer(panGesture)
+        //panGesture.delegate = self
         panGesture.delegate = gestureRecognizerDelegate
+        panGestureViews?.addGestureRecognizer(panGesture)
+        self.addGestureRecognizer(panGesture)
 
-        if superviewCanInterceptTouchEvents {
-            superview?.addGestureRecognizer(panGesture)
-        }
+//        if superviewCanInterceptTouchEvents {
+//            superview?.addGestureRecognizer(panGesture)
+//        }
         
     }
     
@@ -136,6 +142,7 @@ public class DASliderView : UIView {
             default:
                 return ;
         }
+        
     }
     
     @objc private func tapGestureRecognizer(gestureRecognizer: UITapGestureRecognizer) {
@@ -146,12 +153,51 @@ public class DASliderView : UIView {
                                              sliderView: self)
         //print("Tap on view: tag=\(item.view.tag), position=\(item.position)")
     }
+    
+    private var startX: CGFloat = 0
+    private var endX: CGFloat = 0
+    private var translation: CGPoint!
+    
+//    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        startX = touches.first!.location(in: self).x
+//        print("startX=\(startX)")
+//        __layoutManager.scrollBegan()
+//    }
+//
+//    public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        let curX = touches.first!.location(in: self).x
+//        //let translation = CGPoint(x: -(startX - curX), y: 0)
+//        print("curX = \(curX),translationX=\(translation.x)")
+//        translation.x = -(startX - curX)
+//        __layoutManager.scrollChanged(translation)
+//    }
+//
+//    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        endX = touches.first!.location(in: self).x
+//        //let translation = CGPoint(x: -(startX - endX), y: 0)
+//        __layoutManager.scrollEnded(translation)
+//        print("endX=\(endX)")
+//    }
+//
+//    public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        print("Touch canceled")
+//        endX = touches.first!.location(in: self).x
+//        //let translation = CGPoint(x: -(startX - endX), y: 0)
+//        __layoutManager.scrollEnded(translation)
+//    }
 
     @objc private func panGestureHandler(gestureRecognizer: UIPanGestureRecognizer) {
+        
         
         if dataSource == nil { return }
         
         let touchedView = gestureRecognizer.view!
+        
+        if touchedView is UIScrollView {
+            print("touched scroll view!!!!!")
+            return
+        }
+        
         let translation = gestureRecognizer.translation(in: touchedView.superview)
         //let velocity = gestureRecognizer.velocity(in: piece.superview)
         
@@ -163,13 +209,14 @@ public class DASliderView : UIView {
                 
             case .changed:
                 __layoutManager.scrollChanged(translation)
+                print("translation x: \(translation.x)")
                 delegate?.sliderViewDidScroll?(sliderView: self)
                 
             case .ended, .cancelled, .failed: 
-                gestureRecognizer.delegate = gestureRecognizerDelegate
+                //gestureRecognizer.delegate = gestureRecognizerDelegate
                 __layoutManager.scrollEnded(translation)
                 
-                //gestureRecognizer.delegate = self
+               gestureRecognizer.delegate = gestureRecognizerDelegate
             default:
                 print("Invalid gesture state")
         }
@@ -183,4 +230,8 @@ public class DASliderView : UIView {
     public override init(frame: CGRect) {
         super.init(frame: frame)
     }
+    
+//    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+//        return true
+//    }
 }

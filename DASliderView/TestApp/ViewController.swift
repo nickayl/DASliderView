@@ -22,12 +22,11 @@ class ImageItem : DAItemViewImpl {
     }
 }
 
-class ViewController: UIViewController,
-                                      UIGestureRecognizerDelegate,
-                                      DASliderViewDataSouce,
-                                      DASliderViewDelegate {
+class ViewController: UIViewController, UIGestureRecognizerDelegate, DASliderViewDataSouce, DASliderViewDelegate {
     
     @IBOutlet var sliderView: DASliderView!
+    @IBOutlet var sliderView2: DASliderView!
+    
     @IBOutlet var scrollView: UIScrollView!
     
     @IBOutlet weak var positionTextField: UITextField!
@@ -59,30 +58,34 @@ class ViewController: UIViewController,
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        scrollView.contentSize = CGSize(width: view.frame.width, height: 1200)
+        scrollView.isExclusiveTouch = false
+        scrollView.canCancelContentTouches = false
+        
         sliderView.frame.size = CGSize(width: view.frame.width, height: view.frame.height)
+        //try? sliderView.setPosition(newPosition: 1)
         
         sliderView.dataSource = self
         sliderView.delegate = self
         
         sliderView.gestureRecognizerDelegate = self
-        sliderView.superviewCanInterceptTouchEvents = true
+        //sliderView.superviewCanInterceptTouchEvents = true
         
-//        sliderView.setItemsPadding(25)
-//        sliderView.setMinimumDragToScroll(sliderView.frame.width/5)
-        
-        //try? sliderView.setPosition(newPosition: 1)
-        
-//        let props = [ sliderView.kPadding : CGFloat(20),
-//                      sliderView.kMinDragToScroll : view.frame.width/4 ]
-//        sliderView.layoutManager = .centered
-        
-        let props = [ sliderView.kMargin : CGFloat(25),
-                      sliderView.kInitialMargin : CGFloat(10),
+        let props = [ sliderView.kPadding : CGFloat(20),
                       sliderView.kMinDragToScroll : view.frame.width/4 ]
-        sliderView.layoutManager = .leftBound
-        sliderView.animationEnabled = false
+        sliderView.layoutManager = .centered
+        sliderView.panGestureViews = self.view
         sliderView.initialize(withPosition: 1, properties: props)
-        sliderView.animationEnabled = true
+        
+//        let props2 = [ sliderView.kMargin : CGFloat(25),
+//                      sliderView.kInitialMargin : CGFloat(10),
+//                      sliderView.kMinDragToScroll : view.frame.width/4 ]
+//        sliderView2.layoutManager = .leftBound
+//        sliderView2.gestureRecognizerDelegate = self
+//        sliderView2.panGestureViews = scrollView
+//        sliderView2.dataSource = self
+//        sliderView2.delegate = self
+//        sliderView2.initialize(withPosition: 0, properties: props2)
         
         print("SliderView started at position: \(sliderView.currentPosition)")
     }
@@ -125,11 +128,7 @@ class ViewController: UIViewController,
             return item
         }
     }
-    
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
-    }
-    
+      
     func numberOfItems(of sliderView: DASliderView) -> Int {
         return images.count
         //return cards.count
@@ -139,6 +138,10 @@ class ViewController: UIViewController,
     func sizeForItem(at position: Int, sliderView: DASliderView) -> CGSize {
         return imagesSize
         //return cardsSize
+    }
+    
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
     }
     
 //    func paddingForItem(at position: Int, of sliderView: DASliderView) -> CGFloat {
