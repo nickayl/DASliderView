@@ -55,7 +55,7 @@ In your **viewDidLoad** set the **dataSource** and(optionally) the delegate, and
 as shown in this example:
 ```swift
 ...
-var data: [MyData]. // The data array for the sliderview.
+var data: [DAItemView] // The data array for the sliderview.
 let size = CGSize(width: 150, height: 200) // The size of the views. Must be the same for all views.
 ...
 override func viewDidLoad() {
