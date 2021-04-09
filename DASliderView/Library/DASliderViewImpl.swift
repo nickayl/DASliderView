@@ -15,71 +15,37 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
     
     public var currentPosition: Int { return position }
     public var selectedItem: DAItemView { return items[position] }
-    public var layoutManager: DASliderViewLayoutManager {
-        set {
-            if newValue == .centered { __layoutManager = CenteredItemLayoutManager(with: self) }
-            else { __layoutManager = LeftBoundItemLayoutManager(with: self) }
-        }
-        get {
-            __layoutManager.type
-        }
-    }
+    public var addGestureRecognizerToArrayOfViews: [UIView]?
     public var animationEnabled: Bool = true
-   
-    //public var superviewCanInterceptTouchEvents: Bool = true
-    public var gestureRecognizerDelegate: UIGestureRecognizerDelegate?
-    public var properties: [String : CGFloat]!
+    public var layoutManager: LayoutManager!
     
-    // ==== kProperties and private fields
-    public let kPadding = DASliderViewProperty.padding.rawValue
-    public let kMargin = DASliderViewProperty.margin.rawValue
-    public let kInitialMargin = DASliderViewProperty.initialMargin.rawValue
-    public let kMinDragToScroll = DASliderViewProperty.minDragToScroll.rawValue
-    public var panGestureViews: UIView?
+    public internal(set) var position: Int = 0
+    public internal(set) var items: [DAItemView] = []
+    public lazy var minimumDragToScroll: CGFloat = self.frame.size.width/4
     
-    private var __layoutManager: LayoutManager!
-    private var defaultProperties: [String : CGFloat]!
-    
-    internal var padding: CGFloat { properties[kPadding]! }
-    internal var minimumDragToScroll: CGFloat { properties[kMinDragToScroll]! }
-    internal var margin: CGFloat { properties[kMargin]! }
-    internal var initialMargin: CGFloat { properties[kInitialMargin]! }
-    
-    internal var position: Int = 0
-    internal var items: [DAItemView] = []
-    internal var parentView: UIView { return superview ?? self }
-    // ==
-
-    public func initialize() { initialize(withPosition: 0, properties: defaultProperties) }
-    
-    public func initialize(withPosition position: Int, properties: [String : CGFloat] = [:]) {
+    public func initialize(withPosition position: Int = 0) {
+        
         if dataSource == nil {
             print("Sliderview initialized with nil dataSource! You will see nothing until you set the delegate to the sliderView. "); return
         }
         
-        defaultProperties = [ kPadding : CGFloat(25), kMinDragToScroll : frame.width/4, kMargin: CGFloat(25), kInitialMargin: CGFloat(0) ]
-        gestureRecognizerDelegate = gestureRecognizerDelegate ?? self
-        if properties.isEmpty {
-            self.properties = defaultProperties
-        } else if layoutManager == .centered {
-            self.properties = [ kPadding         : properties[kPadding] ?? defaultProperties[kPadding]!,
-                                kMinDragToScroll : properties[kMinDragToScroll] ?? defaultProperties [kMinDragToScroll]!]
-        } else if layoutManager == .leftBound {
-            self.properties = [ kMargin         : properties[kMargin] ?? defaultProperties[kMargin]!,
-                                kInitialMargin         : properties[kInitialMargin] ?? defaultProperties[kInitialMargin]!,
-                                kMinDragToScroll : properties[kMinDragToScroll] ?? defaultProperties [kMinDragToScroll]!]
+        if layoutManager == nil {
+            layoutManager = CenteredItemLayoutManager()
         }
         
-        if __layoutManager == nil {
-            layoutManager = .centered
-        }
+        layoutManager.sliderView = self
+        //gestureRecognizerDelegate = gestureRecognizerDelegate ?? self
+        
+//        if properties.isEmpty {
+//            self.properties = DASliderView.defaultProperties
+//        }
         
         for i in 0 ..< dataSource!.numberOfItems(of: self) {
             let item = dataSource!.viewForItem(at: i, recycling: nil, sliderView: self)
             items.append(item)
         }
         
-        __layoutManager.applyLayout(position: position)
+        layoutManager.applyLayout(position: position)
         
         for item in items {
             // Item view gesture detection ========
@@ -97,8 +63,8 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(gestureRecognizer:)))
         //panGesture.delegate = self
-        panGesture.delegate = gestureRecognizerDelegate
-        panGestureViews?.addGestureRecognizer(panGesture)
+        panGesture.delegate = self
+        addGestureRecognizerToArrayOfViews?.forEach { $0.addGestureRecognizer(panGesture) }
         self.addGestureRecognizer(panGesture)
 
 //        if superviewCanInterceptTouchEvents {
@@ -116,16 +82,17 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         }
         
         //self.position = newPosition
-        __layoutManager.scrollTo(newPosition, animated: animated)
+        layoutManager.scrollTo(newPosition, animated: animated)
     }
     
-    public func setItemsPadding(_ padding: CGFloat) {
-        self.properties[kPadding] = padding < 0 ? defaultProperties[kPadding]! : padding
-    }
+//    public func setItemsPadding(_ padding: CGFloat) {
+//        //self.properties[kPadding] = padding < 0 ? defaultProperties[kPadding]! : padding
+//    }
     
     public func setMinimumDragToScroll(_ amount: CGFloat) {
-        if amount > defaultProperties[ kMinDragToScroll ]! {
-            self.properties[ kMinDragToScroll ] = amount
+        
+        if amount > minimumDragToScroll {
+            minimumDragToScroll = amount
         }
     }
     
@@ -167,18 +134,18 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         
             case .began:  // Here is where the touch movement starts
                 gestureRecognizer.delegate = nil
-                __layoutManager.scrollBegan()
+                layoutManager.scrollBegan()
                 
             case .changed:
-                __layoutManager.scrollChanged(translation)
+                layoutManager.scrollChanged(translation)
                 print("translation x: \(translation.x)")
                 delegate?.sliderViewDidScroll?(sliderView: self)
                 
             case .ended, .cancelled, .failed: 
                 //gestureRecognizer.delegate = gestureRecognizerDelegate
-                __layoutManager.scrollEnded(translation)
+                layoutManager.scrollEnded(translation)
                 
-               gestureRecognizer.delegate = gestureRecognizerDelegate
+               gestureRecognizer.delegate = self //gestureRecognizerDelegate
             default:
                 print("Invalid gesture state")
         }
@@ -199,6 +166,47 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
 }
 
 
+
+//    public var layoutManager: DASliderViewLayoutManager {
+//        set {
+//            if newValue == .centered { __layoutManager = CenteredItemLayoutManager(with: self) }
+//            else { __layoutManager = LeftBoundItemLayoutManager(with: self) }
+//        }
+//        get {
+//            __layoutManager.type
+//        }
+//    }
+    
+   
+    //public var superviewCanInterceptTouchEvents: Bool = true
+    //public var gestureRecognizerDelegate: UIGestureRecognizerDelegate?
+    
+    
+    // ==== kProperties and private fields
+//    public static let kPadding = DASliderViewProperty.padding.rawValue
+//    public static let kMargin = DASliderViewProperty.margin.rawValue
+//    public static let kInitialMargin = DASliderViewProperty.initialMargin.rawValue
+    //public static let kMinDragToScroll = DASliderViewProperty.minDragToScroll.rawValue
+   
+    
+//    public var layoutManager: DASliderViewLayoutManager = .centered
+//    private var __layoutManager: LayoutManager
+    
+//    public static let defaultProperties: [DASliderViewProperty : CGFloat] = [ .padding : CGFloat(25),
+//                                                                              .minDragToScroll : 100,
+//                                                                              .margin: CGFloat(25),
+//                                                                              .initialMargin: CGFloat(0) ]
+    //public private(set) var properties = defaultProperties
+    
+    //internal var padding: CGFloat { properties[.padding] ?? DASliderView.defaultProperties[.padding]! }
+    
+//    internal var margin: CGFloat { properties[.margin] ?? DASliderView.defaultProperties[.margin]! }
+//    internal var initialMargin: CGFloat { properties[.initialMargin] ?? DASliderView.defaultProperties[.initialMargin]! }
+    
+   
+    //internal var parentView: UIView { return superview ?? self }
+    // ==
+    
 
 //private var startX: CGFloat = 0
 //private var endX: CGFloat = 0

@@ -45,10 +45,6 @@ public enum DASliderViewDirection: Int {
     case left = -1, right = 1
 }
 
-@objc public enum DASliderViewLayoutManager: Int {
-    case centered, leftBound
-}
-
 @objc public protocol DASliderViewDataSouce {
     
     // Required function implementations
@@ -67,6 +63,20 @@ public enum DASliderViewDirection: Int {
     @objc optional func sliderViewDidSelect(item: DAItemView, at position: Int, sliderView: DASliderView)
     @objc optional func sliderViewDidReceiveTapOn(item: DAItemView, at position: Int, sliderView: DASliderView)
     @objc optional func sliderViewDidReceiveLongTouchOn(item: DAItemView, at position: Int, sliderView: DASliderView)
+}
+
+
+public enum DASliderViewLayoutManager: Int {
+    case centered, leftBound
+
+//    internal func get(for sliderView: DASliderView) -> LayoutManager {
+//        switch self {
+//        case .centered:
+//            return CenteredItemLayoutManager(with: sliderView)
+//        case .leftBound:
+//            return LeftBoundItemLayoutManager(with: sliderView)
+//        }
+//    }
 }
 
 // old stuff
