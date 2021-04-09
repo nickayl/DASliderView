@@ -45,12 +45,12 @@ public enum DASliderViewDirection: Int {
     case left = -1, right = 1
 }
 
-@objc public protocol DASliderViewDataSouce {
+public protocol DASliderViewDataSouce {
     
     // Required function implementations
-    @objc func viewForItem(at position: Int, recycling convertView: DAItemView?, sliderView: DASliderView) -> DAItemView
-    @objc func sizeForItem(at position: Int, sliderView: DASliderView) -> CGSize
-    @objc func numberOfItems(of sliderView: DASliderView) -> Int
+    func viewForItem(at position: Int, recycling convertView: DAItemView?, sliderView: DASliderView) -> DAItemView
+    func sizeForItem(at position: Int, sliderView: DASliderView) -> CGSize
+    func numberOfItems(of sliderView: DASliderView) -> Int
     
     // Optional function implementations
     // @objc optional func paddingForItem(at position: Int, of sliderView: DASliderView) -> CGFloat

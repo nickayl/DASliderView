@@ -43,12 +43,22 @@ public class LayoutManager {
     fileprivate var items: [DAItemView] { sliderView.items }
     fileprivate var delegate: DASliderViewDelegate? { sliderView.delegate }
     fileprivate var minimumDragToScroll:CGFloat { sliderView.minimumDragToScroll }
-    fileprivate var itemSize: CGSize { sliderView.dataSource!.sizeForItem(at: position, sliderView: sliderView) }
+    //fileprivate var itemSize: CGSize { sliderView.dataSource!.sizeForItem(at: position, sliderView: sliderView) }
+    
     
     public internal(set) var sliderView: DASliderView!
     public internal(set) var type: DASliderViewLayoutManager!
     
     fileprivate var lastItemPosition: [CGPoint]!
+    
+    fileprivate lazy var allSizes: [CGSize] = {
+        var sizes = [CGSize]()
+        
+        for i in 0 ..< sliderView.dataSource!.numberOfItems(of: sliderView) {
+            sizes.append(sliderView.dataSource!.sizeForItem(at: i, sliderView: sliderView))
+        }
+        return sizes
+    }()
     
     fileprivate var rootView: UIView {
         var view: UIView? = sliderView
@@ -66,6 +76,10 @@ public class LayoutManager {
     
     fileprivate init() {}
 
+    fileprivate func itemSize(at position: Int) -> CGSize {
+        return sliderView.dataSource!.sizeForItem(at: position, sliderView: sliderView)
+    }
+    
     internal func scrollBegan() { }
     internal func scrollChanged(_ translation: CGPoint) { }
     internal func scrollEnded(_ translation: CGPoint) { }
@@ -87,8 +101,12 @@ public class LeftBoundItemLayoutManager : LayoutManager {
     public var initialMargin: CGFloat = defaultInitialMargin
     public var leftMargin: CGFloat = defaultLeftMargin
     
-    private var movingFactor: CGFloat {
-        return itemSize.width + (leftMargin * 1)
+//    private var movingFactor: CGFloat {
+//        return itemSize.width + (leftMargin * 1)
+//    }
+    
+    private func movingFactor(at position: Int) -> CGFloat {
+        return sliderView.dataSource!.sizeForItem(at: position, sliderView: sliderView).width + leftMargin
     }
     
     public override init() {
@@ -104,6 +122,7 @@ public class LeftBoundItemLayoutManager : LayoutManager {
         for i in 0 ..< items.count {
             
             let item = items[i]
+            let size = itemSize(at: i)
             //items.append(item)
             
             let x: CGFloat
@@ -112,10 +131,10 @@ public class LeftBoundItemLayoutManager : LayoutManager {
             }
             else {
                 let precX = precedingItem.view.frame.origin.x
-                x = precX + movingFactor
+                x = precX + movingFactor(at: i-1)
             }
             
-            item.view.frame = CGRect(x: x, y: 0, width: itemSize.width, height: itemSize.height)
+            item.view.frame = CGRect(x: x, y: 0, width: size.width, height: size.height)
             item.view.tag = i
             precedingItem = item
             
@@ -162,13 +181,17 @@ public class LeftBoundItemLayoutManager : LayoutManager {
             let point: CGPoint
             let startingPoint = self.lastItemPosition[i]
             
+            //let max = CGFloat( allSizes.map { Float($0.width) }.max()! )
+            
             switch direction {
                 case .left:
-                    point = CGPoint(x: startingPoint.x + (items[i].view.frame.width + leftMargin) * CGFloat(quantity) , y: startingPoint.y)
+                    let w = itemSize(at: position-1).width
+                    point = CGPoint(x: startingPoint.x + (w + leftMargin) * CGFloat(quantity) , y: startingPoint.y)
 //                    point = CGPoint(x:startingPoint.x + self.movingFactor * CGFloat(quantity),
 //                                    y: startingPoint.y)
                 case .right:
-                    point = CGPoint(x: startingPoint.x - (items[i].view.frame.width + leftMargin) * CGFloat(quantity) , y: startingPoint.y)
+                    let w = itemSize(at: position).width
+                    point = CGPoint(x: startingPoint.x - (w + leftMargin) * CGFloat(quantity) , y: startingPoint.y)
                     //point = CGPoint(x:startingPoint.x - self.movingFactor * CGFloat(quantity), y: startingPoint.y)
             }
             
@@ -213,10 +236,11 @@ public class CenteredItemLayoutManager : LayoutManager {
     public static let defaultPadding = CGFloat(25)
     public var padding = CenteredItemLayoutManager.defaultPadding
     
-    private var movingFactor: CGFloat {
+    private func movingFactor(at position: Int) -> CGFloat {
+        let w = itemSize(at: position).width
         return CGFloat(sliderView.frame.size.width/2)
+            + CGFloat(w/2)
             - padding
-            + CGFloat(itemSize.width/2)
     }
     
     override public init() {
@@ -233,18 +257,19 @@ public class CenteredItemLayoutManager : LayoutManager {
         for i in 0 ..< items.count {
             
             let item = items[i]
+            let size = itemSize(at: i)
             //items.append(item)
             
             let x: CGFloat
             if i == 0 {
-                x = (sliderView.frame.size.width/2) - (itemSize.width/2)
+                x = (sliderView.frame.size.width/2) - (size.width/2)
             }
             else {
                 let precX = precedingItem.view.frame.origin.x
-                x = precX + movingFactor
+                x = precX + movingFactor(at: i-1)
             }
             
-            item.view.frame = CGRect(x: x, y: 0, width: itemSize.width, height: itemSize.height)
+            item.view.frame = CGRect(x: x, y: 0, width: size.width, height: size.height)
             item.view.tag = i
             precedingItem = item
         }
@@ -290,9 +315,9 @@ public class CenteredItemLayoutManager : LayoutManager {
             
             switch direction {
                 case .left:
-                    point = CGPoint(x:startingPoint.x + self.movingFactor * CGFloat(quantity), y: startingPoint.y)
+                    point = CGPoint(x:startingPoint.x + self.movingFactor(at: i) * CGFloat(quantity), y: startingPoint.y)
                 case .right:
-                    point = CGPoint(x:startingPoint.x - self.movingFactor * CGFloat(quantity), y: startingPoint.y)
+                    point = CGPoint(x:startingPoint.x - self.movingFactor(at: i) * CGFloat(quantity), y: startingPoint.y)
             }
             
             if animated {

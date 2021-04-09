@@ -24,8 +24,8 @@ class ImageItem : DAItemViewImpl {
 
 class ViewController: UIViewController, UIGestureRecognizerDelegate, DASliderViewDataSouce, DASliderViewDelegate {
     
-    @IBOutlet var sliderView: DASliderView!
-    @IBOutlet var sliderView2: DASliderView!
+    var sliderView: DASliderView!
+    var sliderView2: DASliderView!
     
     @IBOutlet var scrollView: UIScrollView!
     
@@ -58,6 +58,9 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, DASliderVie
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        sliderView = DASliderView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 220))
+        sliderView2 = DASliderView(frame: CGRect(x: 0, y: sliderView.frame.origin.y + 220, width: view.frame.width, height: 220))
+        
         scrollView.contentSize = CGSize(width: view.frame.width, height: 1200)
         scrollView.isExclusiveTouch = false
         scrollView.canCancelContentTouches = false
@@ -67,25 +70,17 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, DASliderVie
         
         sliderView.dataSource = self
         sliderView.delegate = self
+        sliderView.addGestureRecognizerToArrayOfViews = [scrollView]
+        sliderView.initialize(withPosition: 1)
         
-        sliderView.gestureRecognizerDelegate = self
-        //sliderView.superviewCanInterceptTouchEvents = true
+        sliderView2.layoutManager = LeftBoundItemLayoutManager()
+        sliderView2.dataSource = self
+        sliderView2.delegate = self
+        sliderView2.addGestureRecognizerToArrayOfViews = [scrollView]
+        sliderView2.initialize()
         
-        let props = [ sliderView.kPadding : CGFloat(20),
-                      sliderView.kMinDragToScroll : view.frame.width/4 ]
-        sliderView.layoutManager = .centered
-        sliderView.panGestureViews = self.view
-        sliderView.initialize(withPosition: 1, properties: props)
-        
-//        let props2 = [ sliderView.kMargin : CGFloat(25),
-//                      sliderView.kInitialMargin : CGFloat(10),
-//                      sliderView.kMinDragToScroll : view.frame.width/4 ]
-//        sliderView2.layoutManager = .leftBound
-//        sliderView2.gestureRecognizerDelegate = self
-//        sliderView2.panGestureViews = scrollView
-//        sliderView2.dataSource = self
-//        sliderView2.delegate = self
-//        sliderView2.initialize(withPosition: 0, properties: props2)
+        scrollView.addSubview(sliderView)
+        scrollView.addSubview(sliderView2)
         
         print("SliderView started at position: \(sliderView.currentPosition)")
     }
@@ -119,6 +114,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, DASliderVie
             let imageView = UIImageView()
             
             imageView.contentMode = .scaleAspectFit
+            imageView.backgroundColor = UIColor.black
             imageView.image = images[position]
             //imageView.image = cards[position]
             imageView.backgroundColor = .black
@@ -136,7 +132,11 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, DASliderVie
     
     
     func sizeForItem(at position: Int, sliderView: DASliderView) -> CGSize {
-        return imagesSize
+        if position == 0 {
+            return CGSize(width: 200, height: 200)
+        } else {
+            return imagesSize
+        }
         //return cardsSize
     }
     
