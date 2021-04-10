@@ -1,4 +1,5 @@
 
+
 # DASliderView
 
 ![Cocoapods platforms](https://img.shields.io/cocoapods/p/DASliderView.svg?color=%23fb0006)
@@ -43,10 +44,11 @@ Don't forget to bind the DASliderView view with an outlet inside your custom Vie
 Then in your ViewController, you need to implement at least the ```DASliderViewDataSource``` class, but i highly recommend to bind also the ```DASliderViewDelegate``` to receive notification when the user perform various operations (such us when the user scrolls to the previous or next view , when the user taps on the view etc)
 ```swift
 class MyViewController : UIViewController, DASliderViewDelegate, DASliderViewDataSouce { 
-    // The main sender. His messages are considered as Outgoing, all the messages of other senders will be considerer as   Incoming messages.
     
     // The core of the library: The DASliderView class
     @IBOutlet var sliderView: DASliderView!
+    // In this example i use the sliderView inside a UIScrollView
+    @IBOutlet var scrollView: UIScrollView!
 	...
 }
 ```
@@ -66,28 +68,24 @@ override func viewDidLoad() {
 	sliderView.dataSource = self
 	sliderView.delegate = self
 	
-	// Enable the superview to intercept touch events (see below for more info on this)
-	sliderView.gestureRecognizerDelegate = self
-	sliderView.superviewCanInterceptTouchEvents = true
+	// Enable the  parent scrollView to intercept touch events (see below for more info on this)
+	sliderView.parentViewInterceptingTouchEvents = scrollView
 	
-	
-	let props = [ sliderView.kPadding : CGFloat(20),
-	sliderView.kMinDragToScroll : view.frame.width/4 ]
-	
-	sliderView.layoutManager = .centered // The default LayoutManager
-	// Initialize the sliderView at position 1 with the given properties.
-	sliderView.initialize(withPosition: 1, properties: props)
+	// Initialize the sliderView at position 0 (default).
+	sliderView.initialize()
 	...
 }
 ```
 
-### Properties
-There are a bunch of properties available. These are used by the LayoutManager to customize the appearance of the views.
+### Layout Manager
+The SliderView has 2 built-in layout manager that handles how the views must be initially positioned and how they should scroll in response to the user touch events.
 
- - **`kPadding`**:  The overflow of the left and right items in the `.centered` layout manager. Defaults to 25 points.
- -  **`kMargin`**:  The margin of each item view in the `.leftBound` layout manager. Defaults to 25 points.
- - **`kInitialMargin`**:   The margin of the first item from the left edge of the sliderView. Only available on the `.leftBound` layout manager. Defaults to 0.
- - **`kMinDragToScroll`**:  The minimum amount of points needed to trigger a scroll the next or previous position. Defaults to 1/4 of the sliderView size.
+ -  **`CenteredItemLayoutManager`** (default) :  Displays the items starting from the sliderView's center.  The other views are previewed at the left and right bounds of the sliderView. At position 0, there's no left item. 
+ You can adjust the items position using the **`preview`** property.  With this property you can specify the amount of pixels(in points) a view should be visible starting from the left or right bounds.
+ 
+ - **`LeftBoundItemLayoutManager`**:  Displays the items starting from left. You can adjust the items position using the **`initialMargin`** and **`leftMargin`** properties.
+
+For all layout manager the property **`minDragToScroll`** specify how much pixels(in points) the user must drag to trigger a left or right scrolling event.
 
 ### DataSource and Delegate
 You must implement the DASliderViewDataSource to make the SliderView work properly:
@@ -145,18 +143,18 @@ func sliderViewDidScroll(sliderView: DASliderView) {
 ```
  
  ### Forward touch events to the parent UIScrollView
- If the **`DASliderView`**  is inside an other view that needs to intercept the touch events handled by the sliderView such as the UIScrollView, you need to implement the method  '**`gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer)`**' of the   **`UIGestureRecognizerDelegate`**  protocol, as shown in this example:
+ If the `DASliderView`  is inside an other view that needs to intercept the touch events handled by the sliderView, such as the `UIScrollView`, you need to set the **`parentViewInterceptingTouchEvents`** property of `DASliderView`, as shown in this example:
+ 
 ```swift
-class ViewController: UIViewController, UIGestureRecognizerDelegate, DASliderViewDataSouce, DASliderViewDelegate {
+class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDelegate {
+	
+	@IBOutlet var sliderView: DASliderView!
+	@IBOutlet var scrollView: UIScrollView!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		...
-		sliderView.gestureRecognizerDelegate = self
-		sliderView.superviewCanInterceptTouchEvents = true
-	}
-	func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-		return true
+		sliderView.parentViewInterceptingTouchEvents = scrollView
 	}
 	...
 }
