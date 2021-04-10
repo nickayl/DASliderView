@@ -1,5 +1,3 @@
-
-
 # DASliderView
 
 ![Cocoapods platforms](https://img.shields.io/cocoapods/p/DASliderView.svg?color=%23fb0006)
@@ -71,7 +69,15 @@ override func viewDidLoad() {
 	// Enable the  parent scrollView to intercept touch events (see below for more info on this)
 	sliderView.parentViewInterceptingTouchEvents = scrollView
 	
-	// Initialize the sliderView at position 0 (default).
+	// If you want to customize the layout manager and its properties:
+	sliderView.layoutManager = LeftBoundItemLayoutManager(withInitialMargin: 25.0)
+	// Or...
+	sliderView.layoutManager = CenteredItemLayoutManager(withPreview: 30)
+	
+	// Initialize the sliderView at position 0 (default) 
+	// with the provided layout manager. If you do not set a layout manager, 
+	// the default CenteredItemLayoutManager will be used, with its default values.
+	// See below for more info on the layout managers
 	sliderView.initialize()
 	...
 }
