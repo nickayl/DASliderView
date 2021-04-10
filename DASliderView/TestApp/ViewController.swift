@@ -22,7 +22,7 @@ class ImageItem : DAItemViewImpl {
     }
 }
 
-class ViewController: UIViewController, UIGestureRecognizerDelegate, DASliderViewDataSouce, DASliderViewDelegate {
+class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDelegate {
     
     var sliderView: DASliderView!
     var sliderView2: DASliderView!
@@ -70,13 +70,14 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, DASliderVie
         
         sliderView.dataSource = self
         sliderView.delegate = self
-        sliderView.addGestureRecognizerToArrayOfViews = [scrollView]
+        sliderView.layoutManager = CenteredItemLayoutManager(withPreview: 30)
+        sliderView.parentViewInterceptingTouchEvents = scrollView
         sliderView.initialize(withPosition: 1)
         
-        sliderView2.layoutManager = LeftBoundItemLayoutManager()
+        sliderView2.layoutManager = LeftBoundItemLayoutManager(withInitialMargin: 25.0)
         sliderView2.dataSource = self
         sliderView2.delegate = self
-        sliderView2.addGestureRecognizerToArrayOfViews = [scrollView]
+        sliderView2.parentViewInterceptingTouchEvents = scrollView
         sliderView2.initialize()
         
         scrollView.addSubview(sliderView)
@@ -140,9 +141,6 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate, DASliderVie
         //return cardsSize
     }
     
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
-    }
     
 //    func paddingForItem(at position: Int, of sliderView: DASliderView) -> CGFloat {
 //        if position == 3 {

@@ -15,7 +15,7 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
     
     public var currentPosition: Int { return position }
     public var selectedItem: DAItemView { return items[position] }
-    public var addGestureRecognizerToArrayOfViews: [UIView]?
+    public var parentViewInterceptingTouchEvents: UIView?
     public var animationEnabled: Bool = true
     public var layoutManager: LayoutManager!
     
@@ -64,7 +64,7 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(gestureRecognizer:)))
         //panGesture.delegate = self
         panGesture.delegate = self
-        addGestureRecognizerToArrayOfViews?.forEach { $0.addGestureRecognizer(panGesture) }
+        parentViewInterceptingTouchEvents?.addGestureRecognizer(panGesture)
         self.addGestureRecognizer(panGesture)
 
 //        if superviewCanInterceptTouchEvents {

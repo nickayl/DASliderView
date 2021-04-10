@@ -8,31 +8,6 @@
 import Foundation
 import UIKit
 
-//internal protocol LayoutManagerInternal {
-//
-//    func scrollBegan()
-//    func scrollChanged(_ translation: CGPoint)
-//    func scrollEnded(_ translation: CGPoint)
-//    func applyLayout(position: Int)
-//    func scrollTo(_ position: Int, animated: Bool)
-//    func dragItemView(_ translation: CGPoint)
-//    func cancelScroll()
-//    func performScroll(to direction: DASliderViewDirection,
-//                               ofQuantity quantity: Int,
-//                               animated: Bool)
-//
-//    var movingFactor: CGFloat { get }
-//    var position: Int { get set }
-//    var items: [DAItemView] { get }
-//    var properties: [String:CGFloat] { get }
-//    var type: DASliderViewLayoutManager { get }
-//}
-
-//    enum LayoutManagerError : Error {
-//        case NotImplementedError
-//        case AbstractClassCannotBeInstantiated
-//    }
-
 public class LayoutManager {
 
     fileprivate var position: Int {
@@ -43,11 +18,12 @@ public class LayoutManager {
     fileprivate var items: [DAItemView] { sliderView.items }
     fileprivate var delegate: DASliderViewDelegate? { sliderView.delegate }
     fileprivate var minimumDragToScroll:CGFloat { sliderView.minimumDragToScroll }
-    //fileprivate var itemSize: CGSize { sliderView.dataSource!.sizeForItem(at: position, sliderView: sliderView) }
-    
+
     
     public internal(set) var sliderView: DASliderView!
-    public internal(set) var type: DASliderViewLayoutManager!
+    public var type: DASliderViewLayoutManager {
+        return .centered
+    }
     
     fileprivate var lastItemPosition: [CGPoint]!
     
@@ -70,27 +46,72 @@ public class LayoutManager {
         }
     }
     
-    fileprivate func direction(of translation: CGPoint) -> DASliderViewDirection {
-        return translation.x > 0 ? .left : .right
+    fileprivate var sliderViewWidth: CGFloat {
+        sliderView.frame.size.width
     }
     
     fileprivate init() {}
+    
+    fileprivate func direction(of translation: CGPoint) -> DASliderViewDirection {
+        translation.x > 0 ? .left : .right
+    }
 
     fileprivate func itemSize(at position: Int) -> CGSize {
-        return sliderView.dataSource!.sizeForItem(at: position, sliderView: sliderView)
+        sliderView.dataSource!.sizeForItem(at: position, sliderView: sliderView)
     }
     
-    internal func scrollBegan() { }
-    internal func scrollChanged(_ translation: CGPoint) { }
-    internal func scrollEnded(_ translation: CGPoint) { }
+    fileprivate func itemWidth(at position: Int) -> CGFloat {
+        itemSize(at: position).width
+    }
+    
     internal func applyLayout(position: Int) { }
-    internal func scrollTo(_ position: Int, animated: Bool) { }
-    internal func dragItemView(_ translation: CGPoint) { }
-    internal func cancelScroll() { }
     internal func performScroll(to direction: DASliderViewDirection,
                                ofQuantity quantity: Int,
-                               animated: Bool) { }
+                               animated: Bool = true) { }
     
+    func scrollBegan() {
+        lastItemPosition = items.map { $0.view.center }
+    }
+    
+    func scrollChanged(_ translation: CGPoint) {
+        dragItemView(translation)
+    }
+    
+    func scrollEnded(_ translation: CGPoint) {
+        if( (abs(translation.x) < (minimumDragToScroll)) ||
+            (position == items.count-1 && translation.x < 0) ||
+            (position == 0 && translation.x > 0) ) {
+            cancelScroll()
+        }
+        else {
+            performScroll(to: direction(of: translation), ofQuantity: 1)
+        }
+    }
+    
+     func scrollTo(_ position: Int, animated: Bool = true) {
+        lastItemPosition = items.map { $0.view.center }
+        performScroll(to: (position < self.position) ? .left : .right,
+                      ofQuantity: abs(self.position - position), animated: animated)
+    }
+    
+    func cancelScroll() {
+        UIView.animate(withDuration: 0.2) {
+            for i in 0 ..< self.items.count {
+                self.items[i].view.center = CGPoint(x: self.lastItemPosition[i].x, y: self.lastItemPosition[i].y)
+            }
+        }
+    }
+    
+    func dragItemView(_ translation: CGPoint) {
+        for i in 0 ..< items.count { // When the user moves the finger, we are in the changed state.
+            let point = lastItemPosition[i]
+            
+            if abs(translation.x) > abs(translation.y) {
+                let newCenter = CGPoint(x: point.x + translation.x, y: point.y)
+                items[i].view.center = newCenter
+            }
+        }
+    }
 }
 
 public class LeftBoundItemLayoutManager : LayoutManager {
@@ -101,18 +122,23 @@ public class LeftBoundItemLayoutManager : LayoutManager {
     public var initialMargin: CGFloat = defaultInitialMargin
     public var leftMargin: CGFloat = defaultLeftMargin
     
-//    private var movingFactor: CGFloat {
-//        return itemSize.width + (leftMargin * 1)
-//    }
+    override public var type: DASliderViewLayoutManager {
+        return .centered
+    }
     
     private func movingFactor(at position: Int) -> CGFloat {
-        return sliderView.dataSource!.sizeForItem(at: position, sliderView: sliderView).width + leftMargin
+        return itemWidth(at: position) + leftMargin
+    }
+    
+    public init(withInitialMargin: CGFloat = defaultInitialMargin,
+                       leftMargin: CGFloat = defaultLeftMargin) {
+        super.init()
+        self.initialMargin = withInitialMargin
+        self.leftMargin = leftMargin
     }
     
     public override init() {
-        //super.init(with: sliderView)
         super.init()
-        self.type = .leftBound
     }
     
     override func applyLayout(position: Int) {
@@ -143,33 +169,6 @@ public class LeftBoundItemLayoutManager : LayoutManager {
         lastItemPosition = items.map { $0.view.center }
         //self.position = position
         scrollTo(position, animated: sliderView.animationEnabled)
-    }
-    
-    override func scrollBegan() {
-        lastItemPosition = items.map { $0.view.center }
-    }
-    
-    override func scrollChanged(_ translation: CGPoint) {
-        dragItemView(translation)
-    }
-    
-    override func scrollEnded(_ translation: CGPoint) {
-        let direction = self.direction(of: translation)
-        
-        if( (abs(translation.x) < (minimumDragToScroll)) ||
-            (position == items.count-1 && direction == .right) ||
-            (position == 0 && direction == .left) ) {
-            cancelScroll()
-        }
-        else {
-            performScroll(to: direction, ofQuantity: 1)
-        }
-    }
-    
-    override func scrollTo(_ position: Int, animated: Bool = true) {
-        lastItemPosition = items.map { $0.view.center }
-        performScroll(to: (position < self.position) ? .left : .right,
-                      ofQuantity: abs(self.position - position), animated: animated)
     }
     
     override func performScroll(to direction: DASliderViewDirection,
@@ -208,46 +207,26 @@ public class LeftBoundItemLayoutManager : LayoutManager {
         //print("Scrolled to position: \(currentPosition)")
     }
     
-    override func cancelScroll() {
-        UIView.animate(withDuration: 0.2) {
-            for i in 0 ..< self.items.count {
-                self.items[i].view.center = CGPoint(x: self.lastItemPosition[i].x, y: self.lastItemPosition[i].y)
-            }
-        }
-    }
-    
-    override func dragItemView(_ translation: CGPoint) {
-        
-        for i in 0 ..< items.count { // When the user moves the finger, we are in the changed state
-            let point = lastItemPosition[i]
-            
-            if abs(translation.x) > abs(translation.y) {
-                let newCenter = CGPoint(x: point.x + translation.x, y: point.y)
-                items[i].view.center = newCenter
-            }
-        }
-        
-    }
-    
 }
 
 public class CenteredItemLayoutManager : LayoutManager {
     
-    public static let defaultPadding = CGFloat(25)
-    public var padding = CenteredItemLayoutManager.defaultPadding
+    public static let defaultPreview = CGFloat(25)
+    public var preview = CenteredItemLayoutManager.defaultPreview
     
     private func movingFactor(at position: Int) -> CGFloat {
-        let w = itemSize(at: position).width
-        return CGFloat(sliderView.frame.size.width/2)
-            + CGFloat(w/2)
-            - padding
+        return (sliderViewWidth / 2)
+            + (itemWidth(at: position)/2)
+            - preview
     }
     
-    override public init() {
-        //super.init(with: sliderView)
+    public init(withPreview preview: CGFloat) {
         super.init()
-        self.type = .centered
+        self.preview = preview
     }
+    
+    override public init() { super.init() }
+    
     override func applyLayout(position: Int) {
         
         var precedingItem: DAItemView!
@@ -279,30 +258,7 @@ public class CenteredItemLayoutManager : LayoutManager {
         scrollTo(position, animated: sliderView.animationEnabled)
     }
     
-    override func scrollBegan() {
-        lastItemPosition = items.map { $0.view.center }
-    }
     
-    override func scrollChanged(_ translation: CGPoint) {
-        dragItemView(translation)
-    }
-    
-    override func scrollEnded(_ translation: CGPoint) {
-        if( (abs(translation.x) < (minimumDragToScroll)) ||
-            (position == items.count-1 && translation.x < 0) ||
-            (position == 0 && translation.x > 0) ) {
-            cancelScroll()
-        }
-        else {
-            performScroll(to: direction(of: translation), ofQuantity: 1)
-        }
-    }
-    
-    override  func scrollTo(_ position: Int, animated: Bool = true) {
-        lastItemPosition = items.map { $0.view.center }
-        performScroll(to: (position < self.position) ? .left : .right,
-                      ofQuantity: abs(self.position - position), animated: animated)
-    }
     
     override func performScroll(to direction: DASliderViewDirection,
                                ofQuantity quantity: Int,
@@ -327,32 +283,34 @@ public class CenteredItemLayoutManager : LayoutManager {
             }
         }
         
-        
-        // position += (direction == .left ? -1 : 1) * quantity
         position += direction.rawValue * quantity
         delegate?.sliderViewDidSelect?(item: items[position], at: position, sliderView: sliderView)
         //print("Scrolled to position: \(currentPosition)")
     }
     
-    override func cancelScroll() {
-        UIView.animate(withDuration: 0.2) {
-            for i in 0 ..< self.items.count {
-                self.items[i].view.center = CGPoint(x: self.lastItemPosition[i].x, y: self.lastItemPosition[i].y)
-            }
-        }
-    }
-    
-    override func dragItemView(_ translation: CGPoint) {
-        
-        for i in 0 ..< items.count { // When the user moves the finger, we are in the changed state
-            let point = lastItemPosition[i]
-            
-            if abs(translation.x) > abs(translation.y) {
-                let newCenter = CGPoint(x: point.x + translation.x, y: point.y)
-                items[i].view.center = newCenter
-            }
-        }
-        
-    }
-    
 }
+
+//internal protocol LayoutManagerInternal {
+//
+//    func scrollBegan()
+//    func scrollChanged(_ translation: CGPoint)
+//    func scrollEnded(_ translation: CGPoint)
+//    func applyLayout(position: Int)
+//    func scrollTo(_ position: Int, animated: Bool)
+//    func dragItemView(_ translation: CGPoint)
+//    func cancelScroll()
+//    func performScroll(to direction: DASliderViewDirection,
+//                               ofQuantity quantity: Int,
+//                               animated: Bool)
+//
+//    var movingFactor: CGFloat { get }
+//    var position: Int { get set }
+//    var items: [DAItemView] { get }
+//    var properties: [String:CGFloat] { get }
+//    var type: DASliderViewLayoutManager { get }
+//}
+
+//    enum LayoutManagerError : Error {
+//        case NotImplementedError
+//        case AbstractClassCannotBeInstantiated
+//    }

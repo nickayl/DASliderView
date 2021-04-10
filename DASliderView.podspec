@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "DASliderView"
-  spec.version      = "1.0.RC2"
+  spec.version      = "1.0.RC3"
   spec.summary      = "An nice and clean way to display your views as a set of sliding views"
 
   # This description is used to generate tags and improve search results.
