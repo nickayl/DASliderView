@@ -1,4 +1,4 @@
-# DASliderView
+# DASliderView - Sliding the right way
 
 ![Cocoapods platforms](https://img.shields.io/cocoapods/p/DASliderView.svg?color=%23fb0006)
 ![Cocoapods](https://img.shields.io/badge/language-swift%205.0-red.svg)
