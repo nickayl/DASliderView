@@ -56,7 +56,7 @@ as shown in this example:
 ```swift
 ...
 var data: [DAItemView] // The data array for the sliderview.
-let size = CGSize(width: 150, height: 200) // The size of the views. Must be the same for all views.
+let size = CGSize(width: 150, height: 200) // The size of the views. Can be different for every view.
 ...
 override func viewDidLoad() {
 	
