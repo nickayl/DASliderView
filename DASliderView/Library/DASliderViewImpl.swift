@@ -33,12 +33,7 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
             layoutManager = CenteredItemLayoutManager()
         }
         
-        layoutManager.sliderView = self
-        //gestureRecognizerDelegate = gestureRecognizerDelegate ?? self
-        
-//        if properties.isEmpty {
-//            self.properties = DASliderView.defaultProperties
-//        }
+        layoutManager.sliderView = self   
         
         for i in 0 ..< dataSource!.numberOfItems(of: self) {
             let item = dataSource!.viewForItem(at: i, recycling: nil, sliderView: self)
@@ -62,14 +57,10 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         }
         
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(gestureRecognizer:)))
-        //panGesture.delegate = self
         panGesture.delegate = self
         parentViewInterceptingTouchEvents?.addGestureRecognizer(panGesture)
         self.addGestureRecognizer(panGesture)
 
-//        if superviewCanInterceptTouchEvents {
-//            superview?.addGestureRecognizer(panGesture)
-//        }
         
     }
     
@@ -85,9 +76,6 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         layoutManager.scrollTo(newPosition, animated: animated)
     }
     
-//    public func setItemsPadding(_ padding: CGFloat) {
-//        //self.properties[kPadding] = padding < 0 ? defaultProperties[kPadding]! : padding
-//    }
     
     public func setMinimumDragToScroll(_ amount: CGFloat) {
         
@@ -122,11 +110,9 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
     }
     
     @objc private func panGestureHandler(gestureRecognizer: UIPanGestureRecognizer) {
-        
         if dataSource == nil { return }
         
         let touchedView = gestureRecognizer.view!
-        
         let translation = gestureRecognizer.translation(in: touchedView.superview)
         //let velocity = gestureRecognizer.velocity(in: piece.superview)
         
@@ -141,11 +127,13 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
                 print("translation x: \(translation.x)")
                 delegate?.sliderViewDidScroll?(sliderView: self)
                 
-            case .ended, .cancelled, .failed: 
-                //gestureRecognizer.delegate = gestureRecognizerDelegate
-                layoutManager.scrollEnded(translation)
+            case .ended, .cancelled, .failed:
+                let result = (abs(translation.x) < (minimumDragToScroll)) ||
+                    (position == items.count-1 && translation.x < 0) ||
+                    (position == 0 && translation.x > 0)
                 
-               gestureRecognizer.delegate = self //gestureRecognizerDelegate
+                layoutManager.scrollEnded(translation, canScroll: !result)
+                gestureRecognizer.delegate = self //gestureRecognizerDelegate
             default:
                 print("Invalid gesture state")
         }

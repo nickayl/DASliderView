@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-public class LayoutManager {
+public /*abstract*/ class LayoutManager {
 
     fileprivate var position: Int {
         set { sliderView.position = newValue }
@@ -17,7 +17,7 @@ public class LayoutManager {
     
     fileprivate var items: [DAItemView] { sliderView.items }
     fileprivate var delegate: DASliderViewDelegate? { sliderView.delegate }
-    fileprivate var minimumDragToScroll:CGFloat { sliderView.minimumDragToScroll }
+   // fileprivate var minimumDragToScroll:CGFloat { sliderView.minimumDragToScroll }
 
     
     public internal(set) var sliderView: DASliderView!
@@ -50,7 +50,8 @@ public class LayoutManager {
         sliderView.frame.size.width
     }
     
-    fileprivate init() {}
+    // Lack of abstract classes support leads to this ugly hacks
+    fileprivate init() {} // No instance? No party.
     
     fileprivate func direction(of translation: CGPoint) -> DASliderViewDirection {
         translation.x > 0 ? .left : .right
@@ -64,11 +65,6 @@ public class LayoutManager {
         itemSize(at: position).width
     }
     
-    internal func applyLayout(position: Int) { }
-    internal func performScroll(to direction: DASliderViewDirection,
-                               ofQuantity quantity: Int,
-                               animated: Bool = true) { }
-    
     func scrollBegan() {
         lastItemPosition = items.map { $0.view.center }
     }
@@ -77,27 +73,20 @@ public class LayoutManager {
         dragItemView(translation)
     }
     
-    func scrollEnded(_ translation: CGPoint) {
-        if( (abs(translation.x) < (minimumDragToScroll)) ||
-            (position == items.count-1 && translation.x < 0) ||
-            (position == 0 && translation.x > 0) ) {
-            cancelScroll()
-        }
-        else {
+    func scrollEnded(_ translation: CGPoint, canScroll: Bool) {
+        if canScroll {
             performScroll(to: direction(of: translation), ofQuantity: 1)
+            lastItemPosition = items.map { $0.view.center }
+        } else {
+            cancelScroll(translation)
         }
+       
     }
     
-     func scrollTo(_ position: Int, animated: Bool = true) {
-        lastItemPosition = items.map { $0.view.center }
-        performScroll(to: (position < self.position) ? .left : .right,
-                      ofQuantity: abs(self.position - position), animated: animated)
-    }
-    
-    func cancelScroll() {
+    func cancelScroll(_ translation: CGPoint) {
         UIView.animate(withDuration: 0.2) {
             for i in 0 ..< self.items.count {
-                self.items[i].view.center = CGPoint(x: self.lastItemPosition[i].x, y: self.lastItemPosition[i].y)
+                self.items[i].view.center.x = self.lastItemPosition[i].x
             }
         }
     }
@@ -107,10 +96,26 @@ public class LayoutManager {
             let point = lastItemPosition[i]
             
             if abs(translation.x) > abs(translation.y) {
-                let newCenter = CGPoint(x: point.x + translation.x, y: point.y)
-                items[i].view.center = newCenter
+                //let newCenter = CGPoint(x: point.x + translation.x, y: point.y)
+                items[i].view.center.x = point.x + translation.x
             }
         }
+    }
+    
+    func applyLayout(position: Int) { }
+    func performScroll(to direction: DASliderViewDirection, ofQuantity quantity: Int = 1, animated: Bool = true) { }
+    
+    func scrollTo(_ position: Int, animated: Bool = true) {
+        performScroll(to: (position < self.position) ? .left : .right,
+                      ofQuantity: abs(self.position - position), animated: animated)
+    }
+    
+    func scrollLeft(of quantity: Int = 1, animated: Bool = true) {
+        performScroll(to: .left, ofQuantity: quantity, animated: animated)
+    }
+    
+    func scrollRight(of quantity: Int = 1, animated: Bool = true) {
+        performScroll(to: .right, ofQuantity: quantity, animated: animated)
     }
 }
 
@@ -177,31 +182,27 @@ public class LeftBoundItemLayoutManager : LayoutManager {
         
         for i in 0 ..< self.items.count {
             
-            let point: CGPoint
+            let x: CGFloat
             let startingPoint = self.lastItemPosition[i]
-            
-            //let max = CGFloat( allSizes.map { Float($0.width) }.max()! )
             
             switch direction {
                 case .left:
                     let w = itemSize(at: position-1).width
-                    point = CGPoint(x: startingPoint.x + (w + leftMargin) * CGFloat(quantity) , y: startingPoint.y)
-//                    point = CGPoint(x:startingPoint.x + self.movingFactor * CGFloat(quantity),
-//                                    y: startingPoint.y)
+                    x = startingPoint.x + (w + leftMargin) * CGFloat(quantity)
+
                 case .right:
                     let w = itemSize(at: position).width
-                    point = CGPoint(x: startingPoint.x - (w + leftMargin) * CGFloat(quantity) , y: startingPoint.y)
-                    //point = CGPoint(x:startingPoint.x - self.movingFactor * CGFloat(quantity), y: startingPoint.y)
+                    x = startingPoint.x - (w + leftMargin) * CGFloat(quantity)
             }
             
             if animated {
-                UIView.animate(withDuration: 0.2) { self.items[i].view.center = point }
+                UIView.animate(withDuration: 0.2) { self.items[i].view.center.x = x }
             } else {
-                self.items[i].view.center = point
+                self.items[i].view.center.x = x
             }
         }
         
-        // position += (direction == .left ? -1 : 1) * quantity
+  
         position += direction.rawValue * quantity
         delegate?.sliderViewDidSelect?(item: items[position], at: position, sliderView: sliderView)
         //print("Scrolled to position: \(currentPosition)")
@@ -237,7 +238,6 @@ public class CenteredItemLayoutManager : LayoutManager {
             
             let item = items[i]
             let size = itemSize(at: i)
-            //items.append(item)
             
             let x: CGFloat
             if i == 0 {
@@ -289,6 +289,16 @@ public class CenteredItemLayoutManager : LayoutManager {
     }
     
 }
+
+// dead in tombstone
+
+// position += (direction == .left ? -1 : 1) * quantity
+//let max = CGFloat( allSizes.map { Float($0.width) }.max()! )
+//point = CGPoint(x: startingPoint.x + (w + leftMargin) * CGFloat(quantity) , y: startingPoint.y)
+//                    point = CGPoint(x:startingPoint.x + self.movingFactor * CGFloat(quantity),
+//                                    y: startingPoint.y)
+//point = CGPoint(x: startingPoint.x - (w + leftMargin) * CGFloat(quantity) , y: startingPoint.y)
+//point = CGPoint(x:startingPoint.x - self.movingFactor * CGFloat(quantity), y: startingPoint.y)
 
 //internal protocol LayoutManagerInternal {
 //

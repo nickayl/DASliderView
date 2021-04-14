@@ -52,10 +52,6 @@ public protocol DASliderViewDataSouce {
     func sizeForItem(at position: Int, sliderView: DASliderView) -> CGSize
     func numberOfItems(of sliderView: DASliderView) -> Int
     
-    // Optional function implementations
-    // @objc optional func paddingForItem(at position: Int, of sliderView: DASliderView) -> CGFloat
-    //@objc optional func scrollingAnimation(of sliderView: DASliderView) -> UIView.AnimationOptions
-    //@objc optional func amountOfPointsToPerformScroll(of sliderView: DASliderView) -> CGFloat
 }
 
 @objc public protocol DASliderViewDelegate {
@@ -68,6 +64,9 @@ public protocol DASliderViewDataSouce {
 
 public enum DASliderViewLayoutManager: Int {
     case centered, leftBound
+}
+
+// old stuff
 
 //    internal func get(for sliderView: DASliderView) -> LayoutManager {
 //        switch self {
@@ -77,9 +76,11 @@ public enum DASliderViewLayoutManager: Int {
 //            return LeftBoundItemLayoutManager(with: sliderView)
 //        }
 //    }
-}
 
-// old stuff
+// Optional function implementations
+// @objc optional func paddingForItem(at position: Int, of sliderView: DASliderView) -> CGFloat
+//@objc optional func scrollingAnimation(of sliderView: DASliderView) -> UIView.AnimationOptions
+//@objc optional func amountOfPointsToPerformScroll(of sliderView: DASliderView) -> CGFloat
 
 //@objc public protocol DASliderView {
 //
