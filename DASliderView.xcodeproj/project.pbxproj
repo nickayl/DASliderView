@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C02566E9262DDF580088DF73 /* b5_ds.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C02566E4262DDF580088DF73 /* b5_ds.jpg */; };
+		C02566EA262DDF580088DF73 /* b2_ds.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C02566E5262DDF580088DF73 /* b2_ds.jpg */; };
+		C02566EB262DDF580088DF73 /* b1_ds.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C02566E6262DDF580088DF73 /* b1_ds.jpg */; };
+		C02566EC262DDF580088DF73 /* b3_ds.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C02566E7262DDF580088DF73 /* b3_ds.jpg */; };
+		C02566ED262DDF580088DF73 /* b4_ds.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C02566E8262DDF580088DF73 /* b4_ds.jpg */; };
 		C03E8D9F261B9ADD0085F3D7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03E8D9E261B9ADD0085F3D7 /* AppDelegate.swift */; };
 		C03E8DA1261B9ADD0085F3D7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03E8DA0261B9ADD0085F3D7 /* SceneDelegate.swift */; };
 		C03E8DA6261B9ADD0085F3D7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C03E8DA4261B9ADD0085F3D7 /* Main.storyboard */; };
@@ -49,6 +54,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C02566E4262DDF580088DF73 /* b5_ds.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = b5_ds.jpg; sourceTree = "<group>"; };
+		C02566E5262DDF580088DF73 /* b2_ds.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = b2_ds.jpg; sourceTree = "<group>"; };
+		C02566E6262DDF580088DF73 /* b1_ds.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = b1_ds.jpg; sourceTree = "<group>"; };
+		C02566E7262DDF580088DF73 /* b3_ds.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = b3_ds.jpg; sourceTree = "<group>"; };
+		C02566E8262DDF580088DF73 /* b4_ds.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = b4_ds.jpg; sourceTree = "<group>"; };
 		C03E8D9B261B9ADD0085F3D7 /* DASliderView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DASliderView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C03E8D9E261B9ADD0085F3D7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C03E8DA0261B9ADD0085F3D7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -161,6 +171,11 @@
 		C03E8DE1261B9BBE0085F3D7 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				C02566E6262DDF580088DF73 /* b1_ds.jpg */,
+				C02566E5262DDF580088DF73 /* b2_ds.jpg */,
+				C02566E7262DDF580088DF73 /* b3_ds.jpg */,
+				C02566E8262DDF580088DF73 /* b4_ds.jpg */,
+				C02566E4262DDF580088DF73 /* b5_ds.jpg */,
 				C03E8DE3261B9BCA0085F3D7 /* Centered */,
 				C03E8DE2261B9BC50085F3D7 /* Left */,
 			);
@@ -314,8 +329,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				C03E8DFA261B9BED0085F3D7 /* b4.png in Resources */,
+				C02566EB262DDF580088DF73 /* b1_ds.jpg in Resources */,
 				C03E8DEC261B9BD30085F3D7 /* series5.png in Resources */,
 				C03E8DF7261B9BED0085F3D7 /* b2.png in Resources */,
+				C02566EC262DDF580088DF73 /* b3_ds.jpg in Resources */,
 				C03E8DA8261B9ADE0085F3D7 /* Assets.xcassets in Resources */,
 				C03E8DED261B9BD30085F3D7 /* series2.png in Resources */,
 				C03E8DE9261B9BD30085F3D7 /* series1.png in Resources */,
@@ -323,8 +340,11 @@
 				C03E8E0E261B9EFB0085F3D7 /* LaunchScreen.storyboard in Resources */,
 				C03E8DEA261B9BD30085F3D7 /* series3.png in Resources */,
 				C03E8DF9261B9BED0085F3D7 /* b5.png in Resources */,
+				C02566EA262DDF580088DF73 /* b2_ds.jpg in Resources */,
 				C03E8DF6261B9BED0085F3D7 /* b3.png in Resources */,
+				C02566E9262DDF580088DF73 /* b5_ds.jpg in Resources */,
 				C03E8DF8261B9BED0085F3D7 /* b1.png in Resources */,
+				C02566ED262DDF580088DF73 /* b4_ds.jpg in Resources */,
 				C03E8DA6261B9ADD0085F3D7 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-@objc public protocol DAItemView {
+public protocol DAItemView : AnyObject {
     var view: UIView { get }
     var position: Int { get }
     
@@ -45,6 +45,10 @@ public enum DASliderViewDirection: Int {
     case left = -1, right = 1
 }
 
+public enum DASliderViewLayoutManager: Int {
+    case centered, leftBound
+}
+
 public protocol DASliderViewDataSouce {
     
     // Required function implementations
@@ -54,17 +58,20 @@ public protocol DASliderViewDataSouce {
     
 }
 
-@objc public protocol DASliderViewDelegate {
-    @objc optional func sliderViewDidScroll(sliderView: DASliderView)
-    @objc optional func sliderViewDidSelect(item: DAItemView, at position: Int, sliderView: DASliderView)
-    @objc optional func sliderViewDidReceiveTapOn(item: DAItemView, at position: Int, sliderView: DASliderView)
-    @objc optional func sliderViewDidReceiveLongTouchOn(item: DAItemView, at position: Int, sliderView: DASliderView)
+public protocol DASliderViewDelegate {
+    func sliderViewDidScroll(sliderView: DASliderView)
+    func sliderViewDidSelect(item: DAItemView, at position: Int, sliderView: DASliderView)
+    func sliderViewDidReceiveTapOn(item: DAItemView, at position: Int, sliderView: DASliderView)
+    func sliderViewDidReceiveLongTouchOn(item: DAItemView, at position: Int, sliderView: DASliderView)
 }
 
-
-public enum DASliderViewLayoutManager: Int {
-    case centered, leftBound
+extension DASliderViewDelegate { // Default empty implementation: so they are optional without the ugly
+    func sliderViewDidScroll(sliderView: DASliderView) { }
+    func sliderViewDidSelect(item: DAItemView, at position: Int, sliderView: DASliderView) { }
+    func sliderViewDidReceiveTapOn(item: DAItemView, at position: Int, sliderView: DASliderView) { }
+    func sliderViewDidReceiveLongTouchOn(item: DAItemView, at position: Int, sliderView: DASliderView) { }
 }
+
 
 // old stuff
 

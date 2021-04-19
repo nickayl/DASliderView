@@ -49,7 +49,7 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
         try? sliderView.setPosition(newPosition: sliderView.currentPosition+1, animated: animatedSwitch.isOn)
     }
     
-    let images = [ UIImage(named: "b2"), UIImage(named: "b3"), UIImage(named: "b1"), UIImage(named: "b4"), UIImage(named: "b5") ]
+    var images = [ UIImage(named: "b2"), UIImage(named: "b3"), UIImage(named: "b1"), UIImage(named: "b4"), UIImage(named: "b5") ]
     let cards = [ UIImage(named: "series1"), UIImage(named: "series2"), UIImage(named: "series3"), UIImage(named: "series4"), UIImage(named: "series5") ]
     
     let cardsSize = CGSize(width: 280, height: 210)
@@ -84,6 +84,22 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
         scrollView.addSubview(sliderView2)
         
         print("SliderView started at position: \(sliderView.currentPosition)")
+        
+        print("Waiting 3 seconds...")
+        
+        DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 3) {
+            DispatchQueue.main.async {
+                self.images.insert(UIImage(named: "b3_ds.jpg"), at: 1)
+                print("Adding item at position 1")
+                self.sliderView2.reloadData()
+            }
+        }
+//        DispatchQueue.init(label: "myBlock").asyncAfter(deadline: .now() + 3) {
+//            DispatchQueue.main.async {
+//
+//            }
+//        }
+        
     }
     
     func sliderViewDidSelect(item: DAItemView, at position: Int, sliderView: DASliderView) {

@@ -17,51 +17,79 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
     public var selectedItem: DAItemView { return items[position] }
     public var parentViewInterceptingTouchEvents: UIView?
     public var animationEnabled: Bool = true
-    public var layoutManager: LayoutManager!
+    public var layoutManager: LayoutManager = defaultLayoutManager
     
     public internal(set) var position: Int = 0
     public internal(set) var items: [DAItemView] = []
     public lazy var minimumDragToScroll: CGFloat = self.frame.size.width/4
     
+    private var initialized = false
+    
+    private static let defaultLayoutManager = CenteredItemLayoutManager()
+    
     public func initialize(withPosition position: Int = 0) {
         
+        if initialized {
+            print("sliderView cannot be initialized more than once.")
+            return
+        }
+        
         if dataSource == nil {
-            print("Sliderview initialized with nil dataSource! You will see nothing until you set the delegate to the sliderView. "); return
+            print("Sliderview initialized with nil dataSource! You will see nothing until you set the dataSource to the sliderView. ")
+            return
         }
         
-        if layoutManager == nil {
-            layoutManager = CenteredItemLayoutManager()
-        }
+        layoutManager.sliderView = self
         
-        layoutManager.sliderView = self   
-        
-        for i in 0 ..< dataSource!.numberOfItems(of: self) {
-            let item = dataSource!.viewForItem(at: i, recycling: nil, sliderView: self)
-            items.append(item)
-        }
-        
-        layoutManager.applyLayout(position: position)
-        
-        for item in items {
-            // Item view gesture detection ========
-            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapGestureRecognizer(gestureRecognizer:)))
-            let longTouchGesture = UILongPressGestureRecognizer(target: self, action:#selector(longTouchGestureRecognizer(gestureRecognizer:)))
-            longTouchGesture.minimumPressDuration = 0.7
-            longTouchGesture.allowableMovement = 3.0
-            
-            item.view.addGestureRecognizer(tapGesture)
-            item.view.addGestureRecognizer(longTouchGesture)
-            // =====
-            
-            self.addSubview(item.view) // Finally add the view to the sliderview
-        }
+        reloadData()
+        layoutManager.scrollTo(position)
         
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(gestureRecognizer:)))
         panGesture.delegate = self
         parentViewInterceptingTouchEvents?.addGestureRecognizer(panGesture)
         self.addGestureRecognizer(panGesture)
-
         
+        initialized = true
+    }
+    
+    // Causes the sliderView to entirely reload all the views from the dataSource.
+    // Consider using notifyItemInserted or notifyItemRemove instead of this method,
+    // Should be used only as a last resort.
+    public func reloadData() {
+        
+        items.removeAll()
+        self.subviews.forEach { $0.removeFromSuperview() }
+        
+        for i in 0 ..< dataSource!.numberOfItems(of: self) {
+            let item = dataSource!.viewForItem(at: i, recycling: nil, sliderView: self)
+            insertView(atPosition: i, itemView: item)
+        }
+        
+        layoutManager.applyLayout()
+    }
+    
+    public func notifyItemInserted(atIndex index: Int) {
+        
+    }
+    
+    public func notifyItemRemoved(atIndex index: Int) {
+        
+    }
+    
+    private func insertView(atPosition index: Int, itemView: DAItemView, replaceIfPresent: Bool = true) {
+        
+        items.insert(itemView, at: index)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapGestureRecognizer(gestureRecognizer:)))
+        let longTouchGesture = UILongPressGestureRecognizer(target: self, action:#selector(longTouchGestureRecognizer(gestureRecognizer:)))
+        longTouchGesture.minimumPressDuration = 0.7
+        longTouchGesture.allowableMovement = 3.0
+        
+        itemView.view.addGestureRecognizer(tapGesture)
+        itemView.view.addGestureRecognizer(longTouchGesture)
+        itemView.view.tag = index
+        
+        self.addSubview(itemView.view)
     }
     
     public func setPosition(newPosition: Int, animated: Bool = true) throws {
@@ -90,7 +118,7 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
             case .ended, .cancelled, .failed:
                 let item = items.first { $0.view.tag == gestureRecognizer.view!.tag }!
                 
-                delegate?.sliderViewDidReceiveLongTouchOn?(item: item,
+                delegate?.sliderViewDidReceiveLongTouchOn(item: item,
                                                      at: item.view.tag,
                                                      sliderView: self)
                // print("long toch(\(gestureRecognizer.state.rawValue)) on view: tag=\(item.view.tag), position=\(item.position)")
@@ -103,7 +131,7 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
     @objc private func tapGestureRecognizer(gestureRecognizer: UITapGestureRecognizer) {
         let item = items.first { $0.view.tag == gestureRecognizer.view!.tag }!
         
-        delegate?.sliderViewDidReceiveTapOn?(item: item,
+        delegate?.sliderViewDidReceiveTapOn(item: item,
                                              at: item.view.tag,
                                              sliderView: self)
         //print("Tap on view: tag=\(item.view.tag), position=\(item.position)")
@@ -125,7 +153,7 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
             case .changed:
                 layoutManager.scrollChanged(translation)
                 print("translation x: \(translation.x)")
-                delegate?.sliderViewDidScroll?(sliderView: self)
+                delegate?.sliderViewDidScroll(sliderView: self)
                 
             case .ended, .cancelled, .failed:
                 let result = (abs(translation.x) < (minimumDragToScroll)) ||
