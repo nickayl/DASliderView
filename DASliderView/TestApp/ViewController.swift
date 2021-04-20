@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ImageItem : DAItemViewImpl {
+class ImageItem : DAItemView {
     
     var name: String
     
@@ -16,7 +16,7 @@ class ImageItem : DAItemViewImpl {
         self.name = name
     }
     
-    public required init(view: UIView, position: Int) {
+    public required override init(view: UIView, position: Int) {
         self.name = "No name  \(position)"
         super.init(view: view, position: position)
     }
@@ -72,7 +72,7 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
         sliderView.delegate = self
         sliderView.layoutManager = CenteredItemLayoutManager(withPreview: 30)
         sliderView.parentViewInterceptingTouchEvents = scrollView
-        sliderView.initialize(withPosition: 1)
+        sliderView.initialize(withPosition: 0)
         
         sliderView2.layoutManager = LeftBoundItemLayoutManager(withInitialMargin: 25.0)
         sliderView2.dataSource = self

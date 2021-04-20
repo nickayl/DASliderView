@@ -19,10 +19,8 @@ public /*abstract*/ class LayoutManager {
     fileprivate var delegate: DASliderViewDelegate? { sliderView.delegate }
    // fileprivate var minimumDragToScroll:CGFloat { sliderView.minimumDragToScroll }
 
-    
     public internal(set) var sliderView: DASliderView!
     public private(set) var type: DASliderViewLayoutManager!
-    fileprivate var lastItemPosition: [CGPoint]!
     
     fileprivate lazy var allSizes: [CGSize] = {
         var sizes = [CGSize]()
@@ -33,15 +31,15 @@ public /*abstract*/ class LayoutManager {
         return sizes
     }()
     
-    fileprivate var rootView: UIView {
-        var view: UIView? = sliderView
-        
-        while true {
-            if view?.superview != nil {
-                view = view?.superview
-            } else { return view! }
-        }
-    }
+//    fileprivate var rootView: UIView {
+//        var view: UIView? = sliderView
+//
+//        while true {
+//            if view?.superview != nil {
+//                view = view?.superview
+//            } else { return view! }
+//        }
+//    }
     
     fileprivate var sliderViewWidth: CGFloat {
         sliderView.frame.size.width
@@ -62,9 +60,7 @@ public /*abstract*/ class LayoutManager {
         itemSize(at: position).width
     }
     
-    func scrollBegan() {
-        saveCurrentViewsPositions()
-    }
+    func scrollBegan() { }
     
     func scrollChanged(_ translation: CGPoint) {
         dragItemView(translation)
@@ -73,35 +69,35 @@ public /*abstract*/ class LayoutManager {
     func scrollEnded(_ translation: CGPoint, canScroll: Bool) {
         if canScroll {
             performScroll(to: direction(of: translation), ofQuantity: 1)
-            saveCurrentViewsPositions()
-        } else {
-            cancelScroll(translation)
-        }
-       
+            //saveCurrentViewsPositions()
+        } else { cancelScroll(translation) }
     }
     
     fileprivate func cancelScroll(_ translation: CGPoint) {
         UIView.animate(withDuration: 0.2) {
-            for i in 0 ..< self.items.count {
-                self.items[i].view.center.x = self.lastItemPosition[i].x
-            }
+            self.items.forEach { $0.restorePreviousLocation() }
         }
     }
     
     fileprivate func dragItemView(_ translation: CGPoint) {
-        for i in 0 ..< items.count { // When the user moves the finger, we are in the changed state.
-            let point = lastItemPosition[i]
-            
-            if abs(translation.x) > abs(translation.y) {
-                //let newCenter = CGPoint(x: point.x + translation.x, y: point.y)
-                items[i].view.center.x = point.x + translation.x
-            }
+        if abs(translation.x) > abs(translation.y) {
+            items.forEach { $0.move(xQuantity: translation.x) }
         }
     }
-    
-    fileprivate func saveCurrentViewsPositions() {
-        lastItemPosition = items.map { $0.view.center }
-    }
+    //            for i in 0 ..< self.items.count {
+    //                self.items[i].view.center.x = self.lastItemPosition[i].x
+    //            }
+    //        for i in 0 ..< items.count { // When the user moves the finger, we are in the changed state.
+    //            let point = lastItemPosition[i]
+    //
+    //            if abs(translation.x) > abs(translation.y) {
+    //                //let newCenter = CGPoint(x: point.x + translation.x, y: point.y)
+    //                items[i].view.center.x = point.x + translation.x
+    //            }
+    //        }
+//    fileprivate func saveCurrentViewsPositions() {
+//        lastItemPosition = items.map { $0.view.center }
+//    }
     
     func applyLayout() { fatalError("applyLayout not implemented") }
     func performScroll(to direction: DASliderViewDirection, ofQuantity quantity: Int = 1, animated: Bool = true) { fatalError("performScroll not implemented") }
@@ -162,11 +158,10 @@ public class LeftBoundItemLayoutManager : LayoutManager {
             }
             
             item.view.frame = CGRect(x: x, y: 0, width: size.width, height: size.height)
-            //item.view.tag = i
+            item.saveCurrentLocation()
             precedingItem = item
         }
         
-        saveCurrentViewsPositions()
     }
     
     override func performScroll(to direction: DASliderViewDirection,
@@ -176,7 +171,8 @@ public class LeftBoundItemLayoutManager : LayoutManager {
         for i in 0 ..< self.items.count {
             
             let x: CGFloat
-            let startingPoint = self.lastItemPosition[i]
+            let item = items[i]
+            let startingPoint = item.coordinates
             
             switch direction {
                 case .left:
@@ -189,16 +185,14 @@ public class LeftBoundItemLayoutManager : LayoutManager {
             }
             
             if animated {
-                UIView.animate(withDuration: 0.2) { self.items[i].view.center.x = x }
-            } else {
-                self.items[i].view.center.x = x
-            }
+                UIView.animate(withDuration: 0.2) { item.translate(x: x) }
+            } else { item.translate(x: x) }
+            
+            item.saveCurrentLocation()
         }
         
-  
         position += direction.rawValue * quantity
         delegate?.sliderViewDidSelect(item: items[position], at: position, sliderView: sliderView)
-        saveCurrentViewsPositions()
         //print("Scrolled to position: \(currentPosition)")
     }
     
@@ -228,7 +222,7 @@ public class CenteredItemLayoutManager : LayoutManager {
         
         var precedingItem: DAItemView!
         
-        print("superview width: \(rootView.frame.width) sliderView width: \(sliderView.frame.width) bounds=\(sliderView.bounds)")
+       // print("superview width: \(rootView.frame.width) sliderView width: \(sliderView.frame.width) bounds=\(sliderView.bounds)")
         
         for i in 0 ..< items.count {
             
@@ -246,9 +240,8 @@ public class CenteredItemLayoutManager : LayoutManager {
             
             item.view.frame = CGRect(x: x, y: 0, width: size.width, height: size.height)
             precedingItem = item
+            item.saveCurrentLocation()
         }
-        
-        saveCurrentViewsPositions()
     }
     
     override func performScroll(to direction: DASliderViewDirection,
@@ -258,7 +251,8 @@ public class CenteredItemLayoutManager : LayoutManager {
         for i in 0 ..< self.items.count {
             
             let point: CGPoint
-            let startingPoint = self.lastItemPosition[i]
+            let item = items[i]
+            let startingPoint = item.coordinates
             
             switch direction {
                 case .left:
@@ -268,15 +262,16 @@ public class CenteredItemLayoutManager : LayoutManager {
             }
             
             if animated {
-                UIView.animate(withDuration: 0.2) { self.items[i].view.center = point }
+                UIView.animate(withDuration: 0.2) { item.translate(toPoint: point) }
             } else {
-                self.items[i].view.center = point
+                item.translate(toPoint: point)
             }
+            
+            item.saveCurrentLocation()
         }
         
         position += direction.rawValue * quantity
         delegate?.sliderViewDidSelect(item: items[position], at: position, sliderView: sliderView)
-        saveCurrentViewsPositions()
         //print("Scrolled to position: \(currentPosition)")
     }
     

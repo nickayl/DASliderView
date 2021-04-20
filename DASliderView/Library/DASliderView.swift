@@ -8,26 +8,73 @@
 import Foundation
 import UIKit
 
-public protocol DAItemView : AnyObject {
-    var view: UIView { get }
-    var position: Int { get }
-    
-    init(view: UIView, position: Int)
-}
+//public protocol DAItemView : AnyObject {
+//    var view: UIView { get }
+//    var position: Int { get }
+//
+//    init(view: UIView, position: Int)
+//}
 
-open class DAItemViewImpl : NSObject, DAItemView {
+
+//fileprivate class DAItemViewInternalWrapper : DAItemView {
+//
+//    var view: UIView {
+//        daItemView.view
+//    }
+//    var position: Int {
+//        daItemView.position
+//    }
+//
+//    let daItemView: DAItemView
+//    var coordinates: CGPoint = CGPoint.zero
+//
+//    init(itemView: DAItemView) {
+//        self.daItemView = itemView
+//    }
+//
+//    required init(view: UIView, position: Int) {
+//        self.daItemView = DAItemViewImpl(view: view, position: position)
+//    }
+//}
+
+
+open class DAItemView : NSObject {
     
+    // Public getters properties
     public let view: UIView
-    private(set) public var position: Int
-    
+    public private(set) var position: Int
     public override var description: String {
         return "\(String(describing: type(of: self)))(view: \(view), \n position: \(position)"
-        
     }
     
-    public required init(view: UIView, position: Int) {
+    // private properties
+    internal private(set) var coordinates: CGPoint = CGPoint.zero
+    
+    public init(view: UIView, position: Int) {
         self.view = view
         self.position = position
+    }
+    
+    internal func translate(toPoint: CGPoint) {
+        view.center = toPoint
+    }
+    
+    internal func translate(x: CGFloat, y: CGFloat? = nil) {
+        translate(toPoint: CGPoint(x: x, y: y ?? view.center.y))
+    }
+    
+    internal func saveCurrentLocation() {
+        coordinates = view.center
+    }
+    
+    internal func restorePreviousLocation() {
+        view.center = coordinates
+    }
+    
+    internal func move(xQuantity: CGFloat = 0, yQuantity: CGFloat = 0) {
+        //(coordinates.x, coordinates.y) = (xQuantity, yQuantity)
+        view.center.x = coordinates.x + xQuantity
+        //view.center.y = coordinates.y + yQuantity
     }
     
 }

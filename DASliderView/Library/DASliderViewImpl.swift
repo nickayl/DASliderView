@@ -41,8 +41,8 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         
         layoutManager.sliderView = self
         
+        self.position = position
         reloadData()
-        layoutManager.scrollTo(position)
         
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(gestureRecognizer:)))
         panGesture.delegate = self
@@ -55,7 +55,7 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
     // Causes the sliderView to entirely reload all the views from the dataSource.
     // Consider using notifyItemInserted or notifyItemRemove instead of this method,
     // Should be used only as a last resort.
-    public func reloadData() {
+    public func reloadData(animated: Bool = false) {
         
         items.removeAll()
         self.subviews.forEach { $0.removeFromSuperview() }
@@ -66,6 +66,9 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         }
         
         layoutManager.applyLayout()
+        let previousPosition = self.position
+        self.position = 0
+        layoutManager.scrollTo(previousPosition, animated: animated)
     }
     
     public func notifyItemInserted(atIndex index: Int) {
