@@ -98,16 +98,16 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
         
     }
     
-    func sliderViewDidSelect(item: DAItemView, at position: Int, sliderView: DASliderView) {
+    func sliderViewDidSelect(item: DAView, at position: Int, sliderView: DASliderView) {
         //let itm = item as! ImageItem
-        print("Selected item with position \(position) - \(item.position) and name \((item.wrappedDAView as! ImageItem).name)")
+        print("Selected item with position \(position) - \(item.position) and name \((item as! ImageItem).name)")
     }
     
-    func sliderViewDidReceiveTapOn(item: DAItemView, at position: Int, sliderView: DASliderView) {
+    func sliderViewDidReceiveTapOn(item: DAView, at position: Int, sliderView: DASliderView) {
         print("Tapped item with position \(item.position)")
     }
     
-    func sliderViewDidReceiveLongTouchOn(item: DAItemView, at position: Int, sliderView: DASliderView) {
+    func sliderViewDidReceiveLongTouchOn(item: DAView, at position: Int, sliderView: DASliderView) {
         print("Received Long touch on item \(item)")
     }
     

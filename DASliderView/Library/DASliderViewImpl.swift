@@ -14,13 +14,13 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
     public var dataSource: DASliderViewDataSouce?
     
     public var currentPosition: Int { return position }
-    public var selectedItem: DAItemView { return items[position] }
+    public var selectedItem: DAView { return items[position].wrappedDAView }
     public var parentViewInterceptingTouchEvents: UIView?
     public var animationEnabled: Bool = true
     public var layoutManager: LayoutManager = defaultLayoutManager
     
     public internal(set) var position: Int = 0
-    public internal(set) var items: [DAItemView] = []
+    internal var items: [DAItemView] = []
     public lazy var minimumDragToScroll: CGFloat = self.frame.size.width/4
     
     private var initialized = false
@@ -60,13 +60,18 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         items.removeAll()
         self.subviews.forEach { $0.removeFromSuperview() }
         
-        for i in 0 ..< dataSource!.numberOfItems(of: self) {
-            let item = dataSource!.viewForItem(at: i, recycling: nil, sliderView: self)
-            //let size = dataSource!.sizeForItem(at: i, sliderView: self)
-            //item.size = size
-            //insertView(atPosition: i, itemView: item)
+        let numItems = dataSource!.numberOfItems(of: self)
+        
+        for i in 0 ..< numItems {
+            let daView = dataSource!.viewForItem(at: i, recycling: nil, sliderView: self)
+            let itemView = DAItemView(daView: daView, position: i)
             
-            insertView(atPosition: i, itemView: DAItemView(daView: item, position: i))
+            if i > 0  {
+                itemView.previous = items[i-1]
+                items[i-1].next = itemView
+            }
+            
+            insertView(atPosition: i, itemView: itemView)
         }
         
         layoutManager.applyLayout()
@@ -80,6 +85,10 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
     }
     
     public func notifyItemRemoved(atIndex index: Int) {
+        
+    }
+    
+    public func notifyItemChanged(atIndex index: Int) {
         
     }
     
@@ -125,7 +134,7 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
             case .ended, .cancelled, .failed:
                 let item = items.first { $0.view.tag == gestureRecognizer.view!.tag }!
                 
-                delegate?.sliderViewDidReceiveLongTouchOn(item: item,
+                delegate?.sliderViewDidReceiveLongTouchOn(item: item.wrappedDAView,
                                                      at: item.view.tag,
                                                      sliderView: self)
                // print("long toch(\(gestureRecognizer.state.rawValue)) on view: tag=\(item.view.tag), position=\(item.position)")
@@ -138,7 +147,7 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
     @objc private func tapGestureRecognizer(gestureRecognizer: UITapGestureRecognizer) {
         let item = items.first { $0.view.tag == gestureRecognizer.view!.tag }!
         
-        delegate?.sliderViewDidReceiveTapOn(item: item,
+        delegate?.sliderViewDidReceiveTapOn(item: item.wrappedDAView,
                                              at: item.view.tag,
                                              sliderView: self)
         //print("Tap on view: tag=\(item.view.tag), position=\(item.position)")

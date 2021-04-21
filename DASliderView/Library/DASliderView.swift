@@ -33,6 +33,7 @@ open class DAView : NSObject, Comparable {
     
     public static func == (lhs: DAView, rhs: DAView) -> Bool {
         return lhs.view === rhs.view
+            && lhs.position == rhs.position
     }
     
     public static func < (lhs: DAView, rhs: DAView) -> Bool {
@@ -42,26 +43,32 @@ open class DAView : NSObject, Comparable {
 
 //public class DAItemViewFactory
 
-public class DAItemView : NSObject {
+internal class DAItemView : NSObject {
     
     // Public getters properties
     public let wrappedDAView: DAView
+    
     public var view: UIView { wrappedDAView.view }
     public var size: CGSize { wrappedDAView.size }
     public var width: CGFloat { size.width }
     public var height: CGFloat { size.height }
-    
-    public private(set) var position: Int
+    public var position: Int {
+        get { wrappedDAView.position }
+        set { wrappedDAView.position = newValue }
+    }
     
     public override var description: String {
         return "\(String(describing: type(of: self)))(view: \(wrappedDAView.view), \n position: \(position)"
     }
     // private properties
-    internal private(set) var coordinates: CGPoint = .zero
+    internal private(set) var location: CGPoint = .zero
+    
+    internal var previous: DAItemView?
+    internal var next: DAItemView?
     
     internal init(daView: DAView, position: Int) {
         self.wrappedDAView = daView
-        self.position = position
+        self.wrappedDAView.position = position
     }
     
     internal func translate(toPoint: CGPoint) {
@@ -74,17 +81,17 @@ public class DAItemView : NSObject {
     }
     
     internal func saveCurrentLocation() {
-        coordinates = wrappedDAView.view.center
+        location = wrappedDAView.view.center
     }
     
     internal func restorePreviousLocation() {
-        wrappedDAView.view.center = coordinates
+        wrappedDAView.view.center = location
     }
     
     internal func move(xQuantity: CGFloat = 0, yQuantity: CGFloat = 0) {
         //(coordinates.x, coordinates.y) = (xQuantity, yQuantity)
-        wrappedDAView.view.center.x = coordinates.x + xQuantity
-        wrappedDAView.view.center.y = coordinates.y + yQuantity
+        wrappedDAView.view.center.x = location.x + xQuantity
+        wrappedDAView.view.center.y = location.y + yQuantity
     }
     
 }
@@ -117,16 +124,16 @@ public protocol DASliderViewDataSouce {
 
 public protocol DASliderViewDelegate {
     func sliderViewDidScroll(sliderView: DASliderView)
-    func sliderViewDidSelect(item: DAItemView, at position: Int, sliderView: DASliderView)
-    func sliderViewDidReceiveTapOn(item: DAItemView, at position: Int, sliderView: DASliderView)
-    func sliderViewDidReceiveLongTouchOn(item: DAItemView, at position: Int, sliderView: DASliderView)
+    func sliderViewDidSelect(item: DAView, at position: Int, sliderView: DASliderView)
+    func sliderViewDidReceiveTapOn(item: DAView, at position: Int, sliderView: DASliderView)
+    func sliderViewDidReceiveLongTouchOn(item: DAView, at position: Int, sliderView: DASliderView)
 }
 
 extension DASliderViewDelegate { // Default empty implementation: so they are optional without the ugly
     func sliderViewDidScroll(sliderView: DASliderView) { }
-    func sliderViewDidSelect(item: DAItemView, at position: Int, sliderView: DASliderView) { }
-    func sliderViewDidReceiveTapOn(item: DAItemView, at position: Int, sliderView: DASliderView) { }
-    func sliderViewDidReceiveLongTouchOn(item: DAItemView, at position: Int, sliderView: DASliderView) { }
+    func sliderViewDidSelect(item: DAView, at position: Int, sliderView: DASliderView) { }
+    func sliderViewDidReceiveTapOn(item: DAView, at position: Int, sliderView: DASliderView) { }
+    func sliderViewDidReceiveLongTouchOn(item: DAView, at position: Int, sliderView: DASliderView) { }
 }
 
 

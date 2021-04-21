@@ -17,30 +17,10 @@ public /*abstract*/ class LayoutManager {
     
     fileprivate var items: [DAItemView] { sliderView.items }
     fileprivate var delegate: DASliderViewDelegate? { sliderView.delegate }
-   // fileprivate var minimumDragToScroll:CGFloat { sliderView.minimumDragToScroll }
 
     public internal(set) var sliderView: DASliderView!
     public private(set) var type: DASliderViewLayoutManager!
     
-//    fileprivate lazy var allSizes: [CGSize] = {
-//        var sizes = [CGSize]()
-//
-//        for i in 0 ..< sliderView.dataSource!.numberOfItems(of: sliderView) {
-//            //sizes.append(sliderView.dataSource!.sizeForItem(at: i, sliderView: sliderView))
-//            sizes.append(sliderView.dataSource!.viewForItem(at: i, recycling: nil, sliderView: sliderView).size)
-//        }
-//        return sizes
-//    }()
-    
-//    fileprivate var rootView: UIView {
-//        var view: UIView? = sliderView
-//
-//        while true {
-//            if view?.superview != nil {
-//                view = view?.superview
-//            } else { return view! }
-//        }
-//    }
     
     fileprivate var sliderViewWidth: CGFloat {
         sliderView.frame.size.width
@@ -52,15 +32,6 @@ public /*abstract*/ class LayoutManager {
     fileprivate func direction(of translation: CGPoint) -> DASliderViewDirection {
         translation.x > 0 ? .left : .right
     }
-
-//    fileprivate func itemSize(at position: Int) -> CGSize {
-//        //sliderView.dataSource!.sizeForItem(at: position, sliderView: sliderView)
-//        sliderView.dataSource!.viewForItem(at: position, recycling: nil, sliderView: sliderView).size
-//    }
-    
-//    fileprivate func itemWidth(at position: Int) -> CGFloat {
-//        itemSize(at: position).width
-//    }
     
     func scrollBegan() { }
     
@@ -128,26 +99,25 @@ public class LeftBoundItemLayoutManager : LayoutManager {
     
     override func applyLayout() {
         
-        var precedingItem: DAItemView!
+        //var precedingItem: DAItemView!
         
-        for i in 0 ..< items.count {
+        items.forEach { item in
             
-            let item = items[i]
-            //let size = itemSize(at: i)
+            //let item = items[i]
             let size = item.size
             
             let x: CGFloat
-            if i == 0 {
+            if item.position == 0 {
                 x = initialMargin
-            }
-            else {
-                let precX = precedingItem.view.frame.origin.x
-                x = precX + movingFactor(for: precedingItem)
+            } else {
+                //let precX = precedingItem.view.frame.origin.x
+                let precX = item.previous!.view.frame.origin.x
+                x = precX + movingFactor(for: item.previous!)
             }
             
             item.view.frame = CGRect(x: x, y: 0, width: size.width, height: size.height)
             item.saveCurrentLocation()
-            precedingItem = item
+            //precedingItem = item
         }
         
     }
@@ -156,20 +126,17 @@ public class LeftBoundItemLayoutManager : LayoutManager {
                                ofQuantity quantity: Int,
                                animated: Bool = true) {
         
-        for i in 0 ..< self.items.count {
+        items.forEach { item in
+            
+            let startingPoint = item.location
             
             let x: CGFloat
-            let item = items[i]
-            let startingPoint = item.coordinates
-            
             switch direction {
                 case .left:
-                    //let w = itemSize(at: position-1).width
                     let w = items[position-1].width
                     x = startingPoint.x + (w + leftMargin) * CGFloat(quantity)
 
                 case .right:
-                    //let w = itemSize(at: position).width
                     let w = items[position].width
                     x = startingPoint.x - (w + leftMargin) * CGFloat(quantity)
             }
@@ -178,11 +145,10 @@ public class LeftBoundItemLayoutManager : LayoutManager {
                 UIView.animate(withDuration: 0.2) { item.translate(x: x) }
             } else { item.translate(x: x) }
             
-            //item.saveCurrentLocation()
         }
         
         position += direction.rawValue * quantity
-        delegate?.sliderViewDidSelect(item: items[position], at: position, sliderView: sliderView)
+        delegate?.sliderViewDidSelect(item: items[position].wrappedDAView, at: position, sliderView: sliderView)
         //print("Scrolled to position: \(currentPosition)")
     }
     
@@ -238,11 +204,11 @@ public class CenteredItemLayoutManager : LayoutManager {
                                ofQuantity quantity: Int,
                                animated: Bool = true) {
         
-        for i in 0 ..< self.items.count {
+        items.forEach { item in
             
             let point: CGPoint
-            let item = items[i]
-            let startingPoint = item.coordinates
+            //let item = items[i]
+            let startingPoint = item.location
             
             switch direction {
                 case .left:
@@ -257,17 +223,26 @@ public class CenteredItemLayoutManager : LayoutManager {
                 item.translate(toPoint: point)
             }
             
-            //item.saveCurrentLocation()
         }
         
         position += direction.rawValue * quantity
-        delegate?.sliderViewDidSelect(item: items[position], at: position, sliderView: sliderView)
+        delegate?.sliderViewDidSelect(item: items[position].wrappedDAView, at: position, sliderView: sliderView)
         //print("Scrolled to position: \(currentPosition)")
     }
     
 }
 
 // dead in tombstone
+
+//    fileprivate var rootView: UIView {
+//        var view: UIView? = sliderView
+//
+//        while true {
+//            if view?.superview != nil {
+//                view = view?.superview
+//            } else { return view! }
+//        }
+//    }
 
 // position += (direction == .left ? -1 : 1) * quantity
 //let max = CGFloat( allSizes.map { Float($0.width) }.max()! )
