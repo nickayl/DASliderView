@@ -7,19 +7,15 @@
 
 import UIKit
 
-class ImageItem : DAItemView {
+class ImageItem : DAView {
     
-    var name: String
-    
-    convenience init(name: String, view: UIView, position: Int) {
-        self.init(view: view, position: position)
+    var name: String = "no name"
+
+    init(name: String = "", view: UIView, size: CGSize? = nil) {
+        super.init(view: view, size: size)
         self.name = name
     }
-    
-    public required override init(view: UIView, position: Int) {
-        self.name = "No name  \(position)"
-        super.init(view: view, position: position)
-    }
+
 }
 
 class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDelegate {
@@ -103,8 +99,8 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
     }
     
     func sliderViewDidSelect(item: DAItemView, at position: Int, sliderView: DASliderView) {
-        let itm = item as! ImageItem
-        print("Selected item with position \(position) - \(itm.position) and name \(itm.name)")
+        //let itm = item as! ImageItem
+        print("Selected item with position \(position) - \(item.position) and name \((item.wrappedDAView as! ImageItem).name)")
     }
     
     func sliderViewDidReceiveTapOn(item: DAItemView, at position: Int, sliderView: DASliderView) {
@@ -119,13 +115,14 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
         print("Scroll...")
     }
     
-    func viewForItem(at position: Int, recycling convertView: DAItemView?, sliderView: DASliderView) -> UIView {
+    func viewForItem(at position: Int, recycling convertView: DAView?, sliderView: DASliderView) -> DAView {
         
         if let itemView = convertView {
+            
             let imageView = itemView.view as! UIImageView
             imageView.image = images[position]
             
-            return imageView
+            return ImageItem(view: imageView, size: imagesSize)
             
         } else {
             let imageView = UIImageView()
@@ -137,9 +134,19 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
             imageView.backgroundColor = .black
             imageView.isUserInteractionEnabled = true
             
-           // let item = ImageItem(name: "Image\(position)", view: imageView, position: position)
-            //return item
-            return imageView
+            let size: CGSize
+            
+            if position == 0 {
+                size = CGSize(width: 200, height: 200)
+            } else {
+                size = imagesSize
+            }
+            imageView.frame.size = size
+            //let item = ImageItem(name: "Image\(position)", view: imageView, size: size)
+            let item = ImageItem(name: "Image\(position)", view: imageView)
+            //item.size = imagesSize
+            return item
+            //return imageView
         }
     }
       
@@ -149,15 +156,15 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
     }
     
     
-    func sizeForItem(at position: Int, sliderView: DASliderView) -> CGSize {
-        if position == 0 {
-            return CGSize(width: 200, height: 200)
-        } else {
-            return imagesSize
-        }
-        //return cardsSize
-    }
-    
+//    func sizeForItem(at position: Int, sliderView: DASliderView) -> CGSize {
+//        if position == 0 {
+//            return CGSize(width: 200, height: 200)
+//        } else {
+//            return imagesSize
+//        }
+//        //return cardsSize
+//    }
+//
     
 //    func paddingForItem(at position: Int, of sliderView: DASliderView) -> CGFloat {
 //        if position == 3 {

@@ -22,14 +22,15 @@ public /*abstract*/ class LayoutManager {
     public internal(set) var sliderView: DASliderView!
     public private(set) var type: DASliderViewLayoutManager!
     
-    fileprivate lazy var allSizes: [CGSize] = {
-        var sizes = [CGSize]()
-        
-        for i in 0 ..< sliderView.dataSource!.numberOfItems(of: sliderView) {
-            sizes.append(sliderView.dataSource!.sizeForItem(at: i, sliderView: sliderView))
-        }
-        return sizes
-    }()
+//    fileprivate lazy var allSizes: [CGSize] = {
+//        var sizes = [CGSize]()
+//
+//        for i in 0 ..< sliderView.dataSource!.numberOfItems(of: sliderView) {
+//            //sizes.append(sliderView.dataSource!.sizeForItem(at: i, sliderView: sliderView))
+//            sizes.append(sliderView.dataSource!.viewForItem(at: i, recycling: nil, sliderView: sliderView).size)
+//        }
+//        return sizes
+//    }()
     
 //    fileprivate var rootView: UIView {
 //        var view: UIView? = sliderView
@@ -52,13 +53,14 @@ public /*abstract*/ class LayoutManager {
         translation.x > 0 ? .left : .right
     }
 
-    fileprivate func itemSize(at position: Int) -> CGSize {
-        sliderView.dataSource!.sizeForItem(at: position, sliderView: sliderView)
-    }
+//    fileprivate func itemSize(at position: Int) -> CGSize {
+//        //sliderView.dataSource!.sizeForItem(at: position, sliderView: sliderView)
+//        sliderView.dataSource!.viewForItem(at: position, recycling: nil, sliderView: sliderView).size
+//    }
     
-    fileprivate func itemWidth(at position: Int) -> CGFloat {
-        itemSize(at: position).width
-    }
+//    fileprivate func itemWidth(at position: Int) -> CGFloat {
+//        itemSize(at: position).width
+//    }
     
     func scrollBegan() { }
     
@@ -83,20 +85,6 @@ public /*abstract*/ class LayoutManager {
             items.forEach { $0.move(xQuantity: translation.x) }
         }
     }
-    //            for i in 0 ..< self.items.count {
-    //                self.items[i].view.center.x = self.lastItemPosition[i].x
-    //            }
-    //        for i in 0 ..< items.count { // When the user moves the finger, we are in the changed state.
-    //            let point = lastItemPosition[i]
-    //
-    //            if abs(translation.x) > abs(translation.y) {
-    //                //let newCenter = CGPoint(x: point.x + translation.x, y: point.y)
-    //                items[i].view.center.x = point.x + translation.x
-    //            }
-    //        }
-//    fileprivate func saveCurrentViewsPositions() {
-//        lastItemPosition = items.map { $0.view.center }
-//    }
     
     func applyLayout() { fatalError("applyLayout not implemented") }
     func performScroll(to direction: DASliderViewDirection, ofQuantity quantity: Int = 1, animated: Bool = true) { fatalError("performScroll not implemented") }
@@ -125,8 +113,8 @@ public class LeftBoundItemLayoutManager : LayoutManager {
     
     override public var type: DASliderViewLayoutManager! { .leftBound }
     
-    private func movingFactor(at position: Int) -> CGFloat {
-        itemWidth(at: position) + leftMargin
+    private func movingFactor(for item: DAItemView) -> CGFloat {
+        item.width + leftMargin
     }
     
     public init(withInitialMargin: CGFloat = defaultInitialMargin,
@@ -145,7 +133,8 @@ public class LeftBoundItemLayoutManager : LayoutManager {
         for i in 0 ..< items.count {
             
             let item = items[i]
-            let size = itemSize(at: i)
+            //let size = itemSize(at: i)
+            let size = item.size
             
             let x: CGFloat
             if i == 0 {
@@ -153,7 +142,7 @@ public class LeftBoundItemLayoutManager : LayoutManager {
             }
             else {
                 let precX = precedingItem.view.frame.origin.x
-                x = precX + movingFactor(at: i-1)
+                x = precX + movingFactor(for: precedingItem)
             }
             
             item.view.frame = CGRect(x: x, y: 0, width: size.width, height: size.height)
@@ -175,11 +164,13 @@ public class LeftBoundItemLayoutManager : LayoutManager {
             
             switch direction {
                 case .left:
-                    let w = itemSize(at: position-1).width
+                    //let w = itemSize(at: position-1).width
+                    let w = items[position-1].width
                     x = startingPoint.x + (w + leftMargin) * CGFloat(quantity)
 
                 case .right:
-                    let w = itemSize(at: position).width
+                    //let w = itemSize(at: position).width
+                    let w = items[position].width
                     x = startingPoint.x - (w + leftMargin) * CGFloat(quantity)
             }
             
@@ -204,9 +195,9 @@ public class CenteredItemLayoutManager : LayoutManager {
     
     override public var type: DASliderViewLayoutManager! { .centered }
     
-    private func movingFactor(at position: Int) -> CGFloat {
+    private func movingFactor(for item: DAItemView) -> CGFloat {
         return (sliderViewWidth / 2)
-            + (itemWidth(at: position)/2)
+            + (item.width/2)
             - preview
     }
     
@@ -226,7 +217,7 @@ public class CenteredItemLayoutManager : LayoutManager {
         for i in 0 ..< items.count {
             
             let item = items[i]
-            let size = itemSize(at: i)
+            let size = item.size
             
             let x: CGFloat
             if i == 0 {
@@ -234,7 +225,7 @@ public class CenteredItemLayoutManager : LayoutManager {
             }
             else {
                 let precX = precedingItem.view.frame.origin.x
-                x = precX + movingFactor(at: i-1)
+                x = precX + movingFactor(for: precedingItem)
             }
             
             item.view.frame = CGRect(x: x, y: 0, width: size.width, height: size.height)
@@ -255,9 +246,9 @@ public class CenteredItemLayoutManager : LayoutManager {
             
             switch direction {
                 case .left:
-                    point = CGPoint(x:startingPoint.x + self.movingFactor(at: i) * CGFloat(quantity), y: startingPoint.y)
+                    point = CGPoint(x:startingPoint.x + self.movingFactor(for: item) * CGFloat(quantity), y: startingPoint.y)
                 case .right:
-                    point = CGPoint(x:startingPoint.x - self.movingFactor(at: i) * CGFloat(quantity), y: startingPoint.y)
+                    point = CGPoint(x:startingPoint.x - self.movingFactor(for: item) * CGFloat(quantity), y: startingPoint.y)
             }
             
             if animated {

@@ -8,56 +8,83 @@
 import Foundation
 import UIKit
 
-//public protocol DAItemView : AnyObject {
-//    var view: UIView { get }
-//    var position: Int { get }
+//public protocol DAView : AnyObject {
 //
-//    init(view: UIView, position: Int)
+//    var view: UIView { get }
+//    var size: CGSize { get }
+//
+//    init(view: UIView, size: CGSize?)
 //}
+
+//extension DAView {
+//    var size: CGSize { view.frame.size }
+//}
+
+open class DAView : NSObject, Comparable {
+    
+    public internal(set) var position: Int = 0
+    public let size: CGSize
+    public let view: UIView
+    
+    public init(view: UIView, size: CGSize?=nil) {
+        self.view = view
+        self.size = size ?? view.frame.size
+    }
+    
+    public static func == (lhs: DAView, rhs: DAView) -> Bool {
+        return lhs.view === rhs.view
+    }
+    
+    public static func < (lhs: DAView, rhs: DAView) -> Bool {
+        return lhs.position < rhs.position
+    }
+}
+
+//public class DAItemViewFactory
 
 public class DAItemView : NSObject {
     
     // Public getters properties
-    public let view: UIView
-    public private(set) var position: Int
-    
-    public override var description: String {
-        return "\(String(describing: type(of: self)))(view: \(view), \n position: \(position)"
-    }
-    
-    public var size: CGSize = .zero
+    public let wrappedDAView: DAView
+    public var view: UIView { wrappedDAView.view }
+    public var size: CGSize { wrappedDAView.size }
     public var width: CGFloat { size.width }
     public var height: CGFloat { size.height }
     
-    // private properties
-    internal private(set) var coordinates: CGPoint = CGPoint.zero
+    public private(set) var position: Int
     
-    internal init(view: UIView, position: Int) {
-        self.view = view
+    public override var description: String {
+        return "\(String(describing: type(of: self)))(view: \(wrappedDAView.view), \n position: \(position)"
+    }
+    // private properties
+    internal private(set) var coordinates: CGPoint = .zero
+    
+    internal init(daView: DAView, position: Int) {
+        self.wrappedDAView = daView
         self.position = position
     }
     
     internal func translate(toPoint: CGPoint) {
-        view.center = toPoint
+        wrappedDAView.view.center = toPoint
         saveCurrentLocation()
     }
     
     internal func translate(x: CGFloat, y: CGFloat? = nil) {
-        translate(toPoint: CGPoint(x: x, y: y ?? view.center.y))
+        translate(toPoint: CGPoint(x: x, y: y ?? wrappedDAView.view.center.y))
     }
     
     internal func saveCurrentLocation() {
-        coordinates = view.center
+        coordinates = wrappedDAView.view.center
     }
     
     internal func restorePreviousLocation() {
-        view.center = coordinates
+        wrappedDAView.view.center = coordinates
     }
     
     internal func move(xQuantity: CGFloat = 0, yQuantity: CGFloat = 0) {
         //(coordinates.x, coordinates.y) = (xQuantity, yQuantity)
-        view.center.x = coordinates.x + xQuantity
-        view.center.y = coordinates.y + yQuantity
+        wrappedDAView.view.center.x = coordinates.x + xQuantity
+        wrappedDAView.view.center.y = coordinates.y + yQuantity
     }
     
 }
@@ -82,8 +109,8 @@ public enum DASliderViewLayoutManager: Int {
 public protocol DASliderViewDataSouce {
     
     // Required function implementations
-    func viewForItem(at position: Int, recycling convertView: DAItemView?, sliderView: DASliderView) -> UIView
-    func sizeForItem(at position: Int, sliderView: DASliderView) -> CGSize
+    func viewForItem(at position: Int, recycling convertView: DAView?, sliderView: DASliderView) -> DAView
+    //func sizeForItem(at position: Int, sliderView: DASliderView) -> CGSize
     func numberOfItems(of sliderView: DASliderView) -> Int
     
 }
