@@ -62,7 +62,8 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         
         for i in 0 ..< dataSource!.numberOfItems(of: self) {
             let item = dataSource!.viewForItem(at: i, recycling: nil, sliderView: self)
-            insertView(atPosition: i, itemView: item)
+            //insertView(atPosition: i, itemView: item)
+            insertView(atPosition: <#T##Int#>, itemView: <#T##DAItemView#>)
         }
         
         layoutManager.applyLayout()

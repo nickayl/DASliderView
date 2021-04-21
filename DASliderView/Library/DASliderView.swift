@@ -15,48 +15,31 @@ import UIKit
 //    init(view: UIView, position: Int)
 //}
 
-
-//fileprivate class DAItemViewInternalWrapper : DAItemView {
-//
-//    var view: UIView {
-//        daItemView.view
-//    }
-//    var position: Int {
-//        daItemView.position
-//    }
-//
-//    let daItemView: DAItemView
-//    var coordinates: CGPoint = CGPoint.zero
-//
-//    init(itemView: DAItemView) {
-//        self.daItemView = itemView
-//    }
-//
-//    required init(view: UIView, position: Int) {
-//        self.daItemView = DAItemViewImpl(view: view, position: position)
-//    }
-//}
-
-
-open class DAItemView : NSObject {
+public class DAItemView : NSObject {
     
     // Public getters properties
     public let view: UIView
     public private(set) var position: Int
+    
     public override var description: String {
         return "\(String(describing: type(of: self)))(view: \(view), \n position: \(position)"
     }
     
+    public var size: CGSize = .zero
+    public var width: CGFloat { size.width }
+    public var height: CGFloat { size.height }
+    
     // private properties
     internal private(set) var coordinates: CGPoint = CGPoint.zero
     
-    public init(view: UIView, position: Int) {
+    internal init(view: UIView, position: Int) {
         self.view = view
         self.position = position
     }
     
     internal func translate(toPoint: CGPoint) {
         view.center = toPoint
+        saveCurrentLocation()
     }
     
     internal func translate(x: CGFloat, y: CGFloat? = nil) {
@@ -74,7 +57,7 @@ open class DAItemView : NSObject {
     internal func move(xQuantity: CGFloat = 0, yQuantity: CGFloat = 0) {
         //(coordinates.x, coordinates.y) = (xQuantity, yQuantity)
         view.center.x = coordinates.x + xQuantity
-        //view.center.y = coordinates.y + yQuantity
+        view.center.y = coordinates.y + yQuantity
     }
     
 }
@@ -99,7 +82,7 @@ public enum DASliderViewLayoutManager: Int {
 public protocol DASliderViewDataSouce {
     
     // Required function implementations
-    func viewForItem(at position: Int, recycling convertView: DAItemView?, sliderView: DASliderView) -> DAItemView
+    func viewForItem(at position: Int, recycling convertView: DAItemView?, sliderView: DASliderView) -> UIView
     func sizeForItem(at position: Int, sliderView: DASliderView) -> CGSize
     func numberOfItems(of sliderView: DASliderView) -> Int
     

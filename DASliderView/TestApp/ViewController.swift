@@ -119,13 +119,13 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
         print("Scroll...")
     }
     
-    func viewForItem(at position: Int, recycling convertView: DAItemView?, sliderView: DASliderView) -> DAItemView {
+    func viewForItem(at position: Int, recycling convertView: DAItemView?, sliderView: DASliderView) -> UIView {
         
         if let itemView = convertView {
             let imageView = itemView.view as! UIImageView
             imageView.image = images[position]
             
-            return itemView
+            return imageView
             
         } else {
             let imageView = UIImageView()
@@ -137,8 +137,9 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
             imageView.backgroundColor = .black
             imageView.isUserInteractionEnabled = true
             
-            let item = ImageItem(name: "Image\(position)", view: imageView, position: position)
-            return item
+           // let item = ImageItem(name: "Image\(position)", view: imageView, position: position)
+            //return item
+            return imageView
         }
     }
       

@@ -69,7 +69,6 @@ public /*abstract*/ class LayoutManager {
     func scrollEnded(_ translation: CGPoint, canScroll: Bool) {
         if canScroll {
             performScroll(to: direction(of: translation), ofQuantity: 1)
-            //saveCurrentViewsPositions()
         } else { cancelScroll(translation) }
     }
     
@@ -188,7 +187,7 @@ public class LeftBoundItemLayoutManager : LayoutManager {
                 UIView.animate(withDuration: 0.2) { item.translate(x: x) }
             } else { item.translate(x: x) }
             
-            item.saveCurrentLocation()
+            //item.saveCurrentLocation()
         }
         
         position += direction.rawValue * quantity
@@ -267,7 +266,7 @@ public class CenteredItemLayoutManager : LayoutManager {
                 item.translate(toPoint: point)
             }
             
-            item.saveCurrentLocation()
+            //item.saveCurrentLocation()
         }
         
         position += direction.rawValue * quantity
