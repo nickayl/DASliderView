@@ -21,7 +21,6 @@ public /*abstract*/ class LayoutManager {
     public internal(set) var sliderView: DASliderView!
     public private(set) var type: DASliderViewLayoutManager!
     
-    
     fileprivate var sliderViewWidth: CGFloat {
         sliderView.frame.size.width
     }
@@ -59,6 +58,8 @@ public /*abstract*/ class LayoutManager {
     
     func applyLayout() { fatalError("applyLayout not implemented") }
     func performScroll(to direction: DASliderViewDirection, ofQuantity quantity: Int = 1, animated: Bool = true) { fatalError("performScroll not implemented") }
+    //func invalidate(startingFrom index: Int) { }
+    func insertItem(at index: Int) { }
     
     func scrollTo(_ position: Int, animated: Bool = true) {
         performScroll(to: (position < self.position) ? .left : .right,
@@ -150,6 +151,52 @@ public class LeftBoundItemLayoutManager : LayoutManager {
         position += direction.rawValue * quantity
         delegate?.sliderViewDidSelect(item: items[position].wrappedDAView, at: position, sliderView: sliderView)
         //print("Scrolled to position: \(currentPosition)")
+    }
+    
+    override func insertItem(at index: Int) {
+        print("Inserting item at position \(index)...")
+        
+        let item = items[index]
+        
+        let filtered = items.filter {
+            $0.position > index
+        }
+        
+        UIView.animate(withDuration: 0.2) { [self] in
+            filtered.forEach {
+                $0.view.center.x += movingFactor(for: $0)
+                $0.saveCurrentLocation()
+            }
+        }
+        
+        let prevX = item.previous!.view.frame.origin.x
+        
+        item.view.layer.opacity = 0.0
+        item.view.frame = CGRect(x: prevX + movingFactor(for: item.previous!), y: 0, width: item.size.width, height: item.size.height)
+        UIView.animate(withDuration: 0.5, delay: 0.2) { [self] in
+            item.view.layer.opacity = 1.0
+        }
+        
+        item.saveCurrentLocation()
+        
+//        for i in index ..< items.count {
+//
+//            let item = items[i]
+//            let size = item.size
+//
+//            let x: CGFloat
+//            if item.position == 0 {
+//                x = initialMargin
+//            } else {
+//                //let precX = precedingItem.view.frame.origin.x
+//                let precX = item.previous!.view.frame.origin.x
+//                x = precX + movingFactor(for: item.previous!)
+//            }
+//
+//            item.view.frame = CGRect(x: x, y: 0, width: size.width, height: size.height)
+//            item.saveCurrentLocation()
+//        }
+        
     }
     
 }

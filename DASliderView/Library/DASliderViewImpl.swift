@@ -80,18 +80,6 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         layoutManager.scrollTo(previousPosition, animated: animated)
     }
     
-    public func notifyItemInserted(atIndex index: Int) {
-        
-    }
-    
-    public func notifyItemRemoved(atIndex index: Int) {
-        
-    }
-    
-    public func notifyItemChanged(atIndex index: Int) {
-        
-    }
-    
     private func insertView(atPosition index: Int, itemView: DAItemView, replaceIfPresent: Bool = true) {
         
         items.insert(itemView, at: index)
@@ -106,6 +94,45 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         itemView.view.tag = index
         
         self.addSubview(itemView.view)
+    }
+    
+    public func notifyItemInserted(atIndex index: Int) {
+        
+        if dataSource!.numberOfItems(of: self) != items.count + 1 {
+            print("DASliderView WARNING: No new item detected")
+            // reloadData()
+            return
+        }
+        
+        let view = dataSource!.viewForItem(at: index, recycling: items[index].wrappedDAView, sliderView: self)
+        
+        if view !== items[index].wrappedDAView {
+            let itemView = DAItemView(daView: view, position: index)
+            
+            if index > 0 {
+                itemView.previous = items[index-1]
+                items[index-1].next = itemView
+            }
+            if index < items.count-1 {
+                itemView.next = items[index]
+                items[index].previous = itemView
+            }
+            
+            items.filter { $0.position >= index }.forEach { $0.position += 1 }
+            insertView(atPosition: index, itemView: itemView)
+            layoutManager.insertItem(at: index)
+        } else {
+            print("Cannot insert identical DAView instance")
+        }
+        
+    }
+    
+    public func notifyItemRemoved(atIndex index: Int) {
+        
+    }
+    
+    public func notifyItemChanged(atIndex index: Int) {
+        
     }
     
     public func setPosition(newPosition: Int, animated: Bool = true) throws {

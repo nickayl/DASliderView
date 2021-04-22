@@ -74,6 +74,7 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
         sliderView2.dataSource = self
         sliderView2.delegate = self
         sliderView2.parentViewInterceptingTouchEvents = scrollView
+        sliderView2.minimumDragToScroll = sliderView2.frame.size.width / 8
         sliderView2.initialize()
         
         scrollView.addSubview(sliderView)
@@ -83,11 +84,21 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
         
         print("Waiting 3 seconds...")
         
-        DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 3) {
+        DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 2) {
             DispatchQueue.main.async {
                 self.images.insert(UIImage(named: "b3_ds.jpg"), at: 1)
                 print("Adding item at position 1")
-                self.sliderView2.reloadData()
+                //self.sliderView2.reloadData()
+                self.sliderView2.notifyItemInserted(atIndex: 1)
+            }
+        }
+        
+        DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 3) {
+            DispatchQueue.main.async {
+                self.images.insert(UIImage(named: "b4_ds.jpg"), at: 1)
+                print("Adding item at position 1")
+                //self.sliderView2.reloadData()
+                self.sliderView2.notifyItemInserted(atIndex: 1)
             }
         }
 //        DispatchQueue.init(label: "myBlock").asyncAfter(deadline: .now() + 3) {
@@ -117,14 +128,14 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
     
     func viewForItem(at position: Int, recycling convertView: DAView?, sliderView: DASliderView) -> DAView {
         
-        if let itemView = convertView {
-            
-            let imageView = itemView.view as! UIImageView
-            imageView.image = images[position]
-            
-            return ImageItem(view: imageView, size: imagesSize)
-            
-        } else {
+//        if let itemView = convertView {
+//
+//            let imageView = itemView.view as! UIImageView
+//            imageView.image = images[position]
+//
+//            return ImageItem(view: imageView, size: imagesSize)
+//
+//        } else {
             let imageView = UIImageView()
             
             imageView.contentMode = .scaleAspectFit
@@ -147,7 +158,7 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
             //item.size = imagesSize
             return item
             //return imageView
-        }
+        //}
     }
       
     func numberOfItems(of sliderView: DASliderView) -> Int {

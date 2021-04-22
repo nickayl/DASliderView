@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C014192626320FAA00C3FEED /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C014192526320FAA00C3FEED /* LinkedList.swift */; };
 		C02566E9262DDF580088DF73 /* b5_ds.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C02566E4262DDF580088DF73 /* b5_ds.jpg */; };
 		C02566EA262DDF580088DF73 /* b2_ds.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C02566E5262DDF580088DF73 /* b2_ds.jpg */; };
 		C02566EB262DDF580088DF73 /* b1_ds.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C02566E6262DDF580088DF73 /* b1_ds.jpg */; };
@@ -54,6 +55,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C014192526320FAA00C3FEED /* LinkedList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
 		C02566E4262DDF580088DF73 /* b5_ds.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = b5_ds.jpg; sourceTree = "<group>"; };
 		C02566E5262DDF580088DF73 /* b2_ds.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = b2_ds.jpg; sourceTree = "<group>"; };
 		C02566E6262DDF580088DF73 /* b1_ds.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = b1_ds.jpg; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 				C03E8DD5261B9B620085F3D7 /* DASliderView.swift */,
 				C03E8DD2261B9B620085F3D7 /* DASliderViewImpl.swift */,
 				C03E8DD1261B9B620085F3D7 /* LayoutManagers.swift */,
+				C014192526320FAA00C3FEED /* LinkedList.swift */,
 			);
 			path = Library;
 			sourceTree = "<group>";
@@ -376,6 +379,7 @@
 				C03E8D9F261B9ADD0085F3D7 /* AppDelegate.swift in Sources */,
 				C03E8DA1261B9ADD0085F3D7 /* SceneDelegate.swift in Sources */,
 				C03E8DD9261B9B620085F3D7 /* ViewController.swift in Sources */,
+				C014192626320FAA00C3FEED /* LinkedList.swift in Sources */,
 				C03E8DD6261B9B620085F3D7 /* LayoutManagers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
