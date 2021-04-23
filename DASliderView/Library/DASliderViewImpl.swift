@@ -96,7 +96,7 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         self.addSubview(itemView.view)
     }
     
-    public func notifyItemInserted(atIndex index: Int) {
+    public func notifyItemInserted(atIndex index: Int, animated: Bool = true) {
         
         if dataSource!.numberOfItems(of: self) != items.count + 1 {
             print("DASliderView WARNING: No new item detected")
@@ -120,7 +120,7 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
             
             items.filter { $0.position >= index }.forEach { $0.position += 1 }
             insertView(atPosition: index, itemView: itemView)
-            layoutManager.insertItem(at: index)
+            layoutManager.insertItem(at: index, animated: animated)
         } else {
             print("Cannot insert identical DAView instance")
         }
