@@ -23,8 +23,8 @@ import UIKit
 open class DAView : NSObject, Comparable {
     
     public internal(set) var position: Int = 0
-    public let size: CGSize
-    public let view: UIView
+    public var size: CGSize
+    public var view: UIView
     
     public init(view: UIView, size: CGSize?=nil) {
         self.view = view

@@ -27,14 +27,21 @@ import Foundation
  Specify an object that can be linked in a bidirectional way.
  Designed to be used in conjunction with a LinkedList data structure.
  */
-class DoubleLinkedElement<T>  {
+class LinkedElement<T>  {
     
-    var element: T?
-    var previous: DoubleLinkedElement<T>?
-    var next: DoubleLinkedElement<T>?
+    fileprivate(set) var index: Int = -1
+    fileprivate(set) var element: T?
+    fileprivate(set) var previous: LinkedElement<T>?
+    fileprivate(set) var next: LinkedElement<T>?
     
-    init(element: T? = nil) {
+    fileprivate init(element: T? = nil) {
         self.element = element
+    }
+    
+    fileprivate func destroy() {
+        previous = nil
+        next = nil
+        element = nil
     }
 }
 
@@ -43,92 +50,221 @@ class DoubleLinkedElement<T>  {
  
  The implementation roughly follows the one provided on the well known book "Introduction to Algorithms" of Thomas H. Cormen et al.
  */
-final class LinkedList<T> : Sequence {
+
+class LinkedList<T : Equatable> : Sequence {
     
-    typealias Element = T
-    typealias Iterator = LinkedListIterator
+    typealias Element = LinkedElement<T>
+    typealias Iterator = LinkedListIterator<T>
     
-    var head: DoubleLinkedElement<T>
-    var tail: DoubleLinkedElement<T>
+    var head: LinkedElement<T>?
+    var tail: LinkedElement<T>?
+    
+    let sentinel = LinkedElement<T>()
     
     private(set) var count: Int = 0
+    public var isEmpty: Bool { count == 0 }
+    
+    init() {  }
     
     init(withElement headElement: T) {
-        self.head = DoubleLinkedElement(element: headElement)
-        self.tail = self.head
+        addFirst(element: headElement)
     }
     
     func makeIterator() -> LinkedListIterator<T>  {
         return LinkedListIterator<T>(linkedList: self)
     }
 
-    func append(element: T) {
-        let newEntry = DoubleLinkedElement(element: element)
+    func addLast(element: T) {
+        let newEntry = LinkedElement(element: element)
         
-        tail.next = newEntry
+        tail?.next = newEntry
+        newEntry.index = count
         newEntry.previous = tail
         tail = newEntry
-        
         count += 1
     }
     
-    func prepend(element: T) {
-        let newEntry = DoubleLinkedElement(element: element)
+    func addFirst(element: T) {
+        let newEntry = LinkedElement(element: element)
         
-        head.previous = newEntry
+        head?.previous = newEntry
         newEntry.next = head
         head = newEntry
         
-        count += 1
+        sentinel.next = head
+        if tail == nil { tail = head }
+        //count += 1
+        notifyIndexUpdate(of: 1)
     }
     
-    func insert(element: T, atIndex: Int) {
-        // TODO
-    }
-    
-    func removeHead() {
-        if let next = head.next {
-            next.previous = nil
-            head = next
-            count -= 1
-        }
-    }
-    
-    func removeTail() {
-        if let prev = tail.previous {
-            prev.next = nil
-            tail = prev
-            count -= 1
+    func insert(element newElement: T, atIndex index: Int) {
+        
+        if index == 0 {
+            addFirst(element: newElement)
+        } else if index == count - 1 {
+            addLast(element: newElement)
+        } else {
+            var elementAtIndex = sentinel.next
+            
+            for _ in 0 ..< index { elementAtIndex = elementAtIndex?.next }
+            
+            let newLinkedElement = LinkedElement(element: newElement)
+            
+            newLinkedElement.previous = elementAtIndex
+            newLinkedElement.next = elementAtIndex?.next
+            
+            elementAtIndex?.next = newLinkedElement
+            newLinkedElement.next?.previous = newLinkedElement
+            notifyIndexUpdate(of: 1)
         }
         
     }
     
-    func remove(atIndex index: Int) {
-        // TODO
+    func removeFirst() {
+        head?.next?.previous = nil
+        head?.destroy()
+        head = head?.next
+        //count -= 1
+        notifyIndexUpdate(of: -1)
     }
     
-    var underestimatedCount: Int { count }
+    func removeLast() {
+        tail?.previous?.next = nil
+        tail?.destroy()
+        tail = tail?.previous
+        count -= 1
+        //notifyIndexUpdate(of: -1)
+    }
+    
+    func remove(elementAtIndex index: Int) {
+        //remove(element: linkedElementOf(elementatIndex(index)))
+    }
+    
+    func remove(element: T) {
+        
+        let linkedElement = linkedElementOf(element)
+        
+        if linkedElement === head {
+            removeFirst()
+        } else if linkedElement === tail {
+            removeLast()
+        } else {
+            linkedElement?.previous?.next = linkedElement?.next
+            linkedElement?.next?.previous = linkedElement?.previous
+            
+            linkedElement?.destroy()
+            notifyIndexUpdate(of: -1)
+        }
+        
+    }
 
-    func withContiguousStorageIfAvailable<R>(_ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R? { nil }
-    
-    
-    internal final class LinkedListIterator<T> : IteratorProtocol {
+    func elementAtIndex(_ index: Int) -> Element? {
+        var pointer: LinkedElement<T>? = sentinel
         
-        typealias Element = T
+        for _ in 0 ... index { pointer = pointer?.next }
+        
+        return pointer
+    }
+    
+//    func replace(element: T, with: T) {
+//
+//    }
+//
+    
+    public func index(of element: T) -> Int? {
+        var currentElement = sentinel.next
+        
+        while currentElement != nil {
+            if currentElement?.element == element {
+                return currentElement?.index
+            }
+            currentElement = currentElement?.next
+        }
+        
+        return nil
+    }
+    
+    // Private functions ===
+    
+    private func linkedElementOf(_ element: T) -> LinkedElement<T>? {
+        var currentElement = sentinel.next
+        
+        while currentElement?.element != element {
+            currentElement = currentElement?.next
+        }
+        
+        return currentElement
+    }
+    
+    private func notifyIndexUpdate(of quantity: Int) {
+        let iterator = makeIterator()
+        
+        while let element = iterator.next() {
+            element.index += quantity
+        }
+        
+        count += quantity
+    }
+    
+//    private func internalIterator() -> InternalListIterator<T> {
+//        return InternalListIterator<T>(linkedList: self)
+//    }
+    
+//    public func find(elementAtIndex index: Int) {
+//        let iterator = makeIterator()
+//
+//    }
+    
+//    public func find(element: T) -> {
+//        let iterator = makeIterator()
+//
+//        while let e = iterator.next() {
+//
+//        }
+//    }
+    
+    class LinkedListIterator<T : Equatable> : IteratorProtocol {
+        
+        typealias Element = LinkedElement<T>
         
         let linkedList: LinkedList<T>
-        var currentElement: DoubleLinkedElement<T>? = nil
+        var currentElement: LinkedElement<T>?
         
         init(linkedList: LinkedList<T>) {
             self.linkedList = linkedList
-            currentElement = linkedList.head
+            currentElement = linkedList.sentinel
         }
         
-        func next() -> T? {
-            let cur = currentElement?.element
+        func next() -> LinkedElement<T>? {
             currentElement = currentElement?.next
-            return cur
+            if currentElement == nil {
+                currentElement = linkedList.sentinel
+                return nil
+            }
+            return currentElement
         }
     }
+    
+//    internal final class LinkedListIterator<T : Equatable> : IteratorProtocol {
+//
+//        typealias Element = T
+//
+//        let linkedList: LinkedList<T>
+//        var currentElement: LinkedElement<T>? = nil
+//
+//        init(linkedList: LinkedList<T>) {
+//            self.linkedList = linkedList
+//            currentElement = linkedList.sentinel
+//        }
+//
+//        func next() -> T? {
+//            currentElement = currentElement?.next
+//            if currentElement == nil {
+//                currentElement = linkedList.sentinel
+//                return nil
+//            }
+//            return currentElement?.element
+//        }
+//    }
     
 }

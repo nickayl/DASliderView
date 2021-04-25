@@ -100,20 +100,21 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         
         if dataSource!.numberOfItems(of: self) != items.count + 1 {
             print("DASliderView WARNING: No new item detected")
-            // reloadData()
             return
+        } else if index < 0 || index > items.count {
+            print("Cannot insert item at index \(index): It must be in the range 0 ... numberOfItems. If you are adding more than one item, use reloadData()")
         }
         
         let view = dataSource!.viewForItem(at: index, recycling: items[index].wrappedDAView, sliderView: self)
         
-        if view !== items[index].wrappedDAView {
+        if view != items[index].wrappedDAView {
             let itemView = DAItemView(daView: view, position: index)
             
             if index > 0 {
                 itemView.previous = items[index-1]
                 items[index-1].next = itemView
             }
-            if index < items.count-1 {
+            if index < items.count {
                 itemView.next = items[index]
                 items[index].previous = itemView
             }
@@ -128,11 +129,36 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
     }
     
     public func notifyItemRemoved(atIndex index: Int) {
+        if dataSource!.numberOfItems(of: self) != items.count - 1 {
+            print("DASliderView WARNING: No removed item detected. Please use reloadData() for radical changes to the dataset.")
+            // reloadData()
+            return
+        } else if isOutOfBounds(index) {
+            print("Index oout of ranges!")
+        }
         
+        let view = dataSource!.viewForItem(at: index, recycling: nil, sliderView: self)
+        let itemAtIndex = items[index]
+        
+        if itemAtIndex.wrappedDAView != view {
+            
+            itemAtIndex.previous?.next = itemAtIndex.next
+            itemAtIndex.next?.previous = itemAtIndex.previous
+            
+            items.remove(at: index)
+            items.filter { $0.position >= index }.forEach { $0.position -= 1 }
+            //layoutManager.removeItem(at: index, animated: animated)
+        } else {
+            print("Cannot insert identical DAView instance")
+        }
     }
     
     public func notifyItemChanged(atIndex index: Int) {
+        let updatedView = dataSource!.viewForItem(at: index, recycling: items[index].wrappedDAView, sliderView: self)
         
+        if updatedView !== items[index].wrappedDAView {
+            items[index] = DAItemView(daView: updatedView, position: index)
+        }
     }
     
     public func setPosition(newPosition: Int, animated: Bool = true) throws {
@@ -153,6 +179,10 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         if amount > minimumDragToScroll {
             minimumDragToScroll = amount
         }
+    }
+    
+    private func isOutOfBounds(_ index: Int) -> Bool {
+        index < 0 || index >= items.count
     }
     
     @objc private func longTouchGestureRecognizer(gestureRecognizer: UILongPressGestureRecognizer) {

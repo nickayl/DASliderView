@@ -35,6 +35,8 @@
 		C03E8DF9261B9BED0085F3D7 /* b5.png in Resources */ = {isa = PBXBuildFile; fileRef = C03E8DF4261B9BED0085F3D7 /* b5.png */; };
 		C03E8DFA261B9BED0085F3D7 /* b4.png in Resources */ = {isa = PBXBuildFile; fileRef = C03E8DF5261B9BED0085F3D7 /* b4.png */; };
 		C03E8E0E261B9EFB0085F3D7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C03E8E0C261B9EFB0085F3D7 /* LaunchScreen.storyboard */; };
+		C06A6DC026347FF800452707 /* LinkedListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06A6DBF26347FF800452707 /* LinkedListTests.swift */; };
+		C06A6DC42634805800452707 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C014192526320FAA00C3FEED /* LinkedList.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +91,7 @@
 		C03E8DF4261B9BED0085F3D7 /* b5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = b5.png; sourceTree = "<group>"; };
 		C03E8DF5261B9BED0085F3D7 /* b4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = b4.png; sourceTree = "<group>"; };
 		C03E8E0D261B9EFB0085F3D7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		C06A6DBF26347FF800452707 /* LinkedListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedListTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +158,7 @@
 		C03E8DB4261B9ADE0085F3D7 /* DASliderViewTests */ = {
 			isa = PBXGroup;
 			children = (
+				C06A6DBF26347FF800452707 /* LinkedListTests.swift */,
 				C03E8DB5261B9ADE0085F3D7 /* DASliderViewTests.swift */,
 				C03E8DB7261B9ADE0085F3D7 /* Info.plist */,
 			);
@@ -388,6 +392,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C06A6DC42634805800452707 /* LinkedList.swift in Sources */,
+				C06A6DC026347FF800452707 /* LinkedListTests.swift in Sources */,
 				C03E8DB6261B9ADE0085F3D7 /* DASliderViewTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
