@@ -27,12 +27,16 @@ import Foundation
  Specify an object that can be linked in a bidirectional way.
  Designed to be used in conjunction with a LinkedList data structure.
  */
-class LinkedElement<T>  {
+class LinkedElement<T> : CustomStringConvertible {
     
     fileprivate(set) var index: Int = -1
     fileprivate(set) var element: T?
     fileprivate(set) var previous: LinkedElement<T>?
     fileprivate(set) var next: LinkedElement<T>?
+    
+    public var description: String {
+        "LinkedElement(index: \(index), element: \(element.debugDescription),  previous: \(previous?.element.debugDescription ?? "---"), next: \(next?.element.debugDescription ?? "---")".replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: "\")", with: "\"")
+    }
     
     fileprivate init(element: T? = nil) {
         self.element = element
@@ -42,7 +46,10 @@ class LinkedElement<T>  {
         previous = nil
         next = nil
         element = nil
+        index = -1
     }
+    
+    
 }
 
 /**
@@ -51,7 +58,7 @@ class LinkedElement<T>  {
  The implementation roughly follows the one provided on the well known book "Introduction to Algorithms" of Thomas H. Cormen et al.
  */
 
-class LinkedList<T : Equatable> : Sequence {
+class LinkedList<T : Equatable> : Sequence, CustomStringConvertible {
     
     typealias Element = LinkedElement<T>
     typealias Iterator = LinkedListIterator<T>
@@ -60,6 +67,19 @@ class LinkedList<T : Equatable> : Sequence {
     var tail: LinkedElement<T>?
     
     let sentinel = LinkedElement<T>()
+    
+    public var description: String {
+        var s = "\(type(of: self))(head: \(head), \n position: \(tail))\n"
+        return s
+    }
+    
+    public func printAll() {
+        print("[", terminator: "")
+        self.forEach {
+            print($0.description + ",") 
+        }
+        print("]")
+    }
     
     private(set) var count: Int = 0
     public var isEmpty: Bool { count == 0 }
@@ -74,16 +94,6 @@ class LinkedList<T : Equatable> : Sequence {
         return LinkedListIterator<T>(linkedList: self)
     }
 
-    func addLast(element: T) {
-        let newEntry = LinkedElement(element: element)
-        
-        tail?.next = newEntry
-        newEntry.index = count
-        newEntry.previous = tail
-        tail = newEntry
-        count += 1
-    }
-    
     func addFirst(element: T) {
         let newEntry = LinkedElement(element: element)
         
@@ -97,11 +107,29 @@ class LinkedList<T : Equatable> : Sequence {
         notifyIndexUpdate(of: 1)
     }
     
+    func addLast(element: T) {
+        let newEntry = LinkedElement(element: element)
+        
+        tail?.next = newEntry
+        newEntry.index = count
+        newEntry.previous = tail
+        tail = newEntry
+        if head == nil {
+            head = tail
+            sentinel.next = head
+        }
+        count += 1
+    }
+    
+    func addAll(_ elements: [T]) {
+        elements.forEach { addLast(element: $0) }
+    }
+    
     func insert(element newElement: T, atIndex index: Int) {
         
         if index == 0 {
             addFirst(element: newElement)
-        } else if index == count - 1 {
+        } else if index == count {
             addLast(element: newElement)
         } else {
             var elementAtIndex = sentinel.next
@@ -121,44 +149,78 @@ class LinkedList<T : Equatable> : Sequence {
     }
     
     func removeFirst() {
-        head?.next?.previous = nil
-        head?.destroy()
+        let currentHead = head
+        
         head = head?.next
+        head?.previous = nil
+        
+        sentinel.next = head
+        
+        currentHead?.destroy()
         //count -= 1
         notifyIndexUpdate(of: -1)
     }
     
     func removeLast() {
-        tail?.previous?.next = nil
-        tail?.destroy()
+        let currentTail = tail
         tail = tail?.previous
+        tail?.next = nil
         count -= 1
+        
+        currentTail?.destroy()
+        
+        if count == 0 {
+            head = nil
+        }
+        //if head == nil { head = tail }
         //notifyIndexUpdate(of: -1)
     }
     
-    func remove(elementAtIndex index: Int) {
-        //remove(element: linkedElementOf(elementatIndex(index)))
+    func removeAll() {
+        for _ in 0 ..< count { removeLast() }
     }
     
-    func remove(element: T) {
-        
-        let linkedElement = linkedElementOf(element)
+    func remove(linkedElement: LinkedElement<T>) {
         
         if linkedElement === head {
             removeFirst()
         } else if linkedElement === tail {
             removeLast()
         } else {
-            linkedElement?.previous?.next = linkedElement?.next
-            linkedElement?.next?.previous = linkedElement?.previous
+            linkedElement.previous?.next = linkedElement.next
+            linkedElement.next?.previous = linkedElement.previous
             
-            linkedElement?.destroy()
+            linkedElement.destroy()
             notifyIndexUpdate(of: -1)
         }
-        
     }
+    
+    func remove(_ elements: [LinkedElement<T>]) {
+        elements.forEach {
+            remove(linkedElement: $0)
+        }
+    }
+    
+    func remove(element: T) {
+        if let linkedElement = linkedElementOf(element) {
+            remove(linkedElement: linkedElement)
+        }
+    }
+    
+    func remove(_ elements: [T]) {
+        elements.forEach {
+            remove(element: $0)
+        }
+    }
+    
+    
 
     func elementAtIndex(_ index: Int) -> Element? {
+        
+        if index < 0 || index >= count {
+            return nil
+        }
+        
         var pointer: LinkedElement<T>? = sentinel
         
         for _ in 0 ... index { pointer = pointer?.next }
@@ -204,6 +266,11 @@ class LinkedList<T : Equatable> : Sequence {
         }
         
         count += quantity
+        
+        if count == 0 {
+            head = nil
+            tail = nil
+        }
     }
     
 //    private func internalIterator() -> InternalListIterator<T> {
