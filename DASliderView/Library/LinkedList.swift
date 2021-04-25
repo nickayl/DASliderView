@@ -273,6 +273,17 @@ class LinkedList<T : Equatable> : Sequence, CustomStringConvertible {
         }
     }
     
+    subscript(row: Int) -> T {
+        get {
+            assert(row >= 0 || row < count, "IndexOutOfBoundsException")
+            return elementAtIndex(row)!.element!
+        }
+//        set {
+//            assert(row >= 0 || row <= count, "IndexOutOfBoundsException")
+//            insert(element: newValue.element!, atIndex: row)
+//        }
+    }
+    
 //    private func internalIterator() -> InternalListIterator<T> {
 //        return InternalListIterator<T>(linkedList: self)
 //    }

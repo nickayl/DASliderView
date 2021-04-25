@@ -84,6 +84,16 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
         
         print("Waiting 3 seconds...")
         
+//        DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 1) {
+//            DispatchQueue.main.async {
+//                self.images.removeFirst()
+//                self.images.insert(UIImage(named: "b3_ds.jpg"), at: 0)
+//                print("Adding item at position 1")
+//                //self.sliderView2.reloadData()
+//                self.sliderView2.notifyItemChanged(atIndex: 0)
+//            }
+//        }
+
         DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 2) {
             DispatchQueue.main.async {
                 self.images.insert(UIImage(named: "b3_ds.jpg"), at: 1)
@@ -93,14 +103,23 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
             }
         }
         
-        DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 3) {
-            DispatchQueue.main.async {
-                self.images.insert(UIImage(named: "b4_ds.jpg"), at: 1)
-                print("Adding item at position 1")
-                //self.sliderView2.reloadData()
-                self.sliderView2.notifyItemInserted(atIndex: 1)
-            }
-        }
+//        DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 3) {
+//            DispatchQueue.main.async {
+//                self.images.insert(UIImage(named: "b4_ds.jpg"), at: 1)
+//                print("Adding item at position 1")
+//                //self.sliderView2.reloadData()
+//                self.sliderView2.notifyItemInserted(atIndex: 1)
+//            }
+//        }
+//
+//        DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 4) {
+//            DispatchQueue.main.async {
+//                self.images.removeFirst()
+//                print("Adding item at position 1")
+//                //self.sliderView2.reloadData()
+//                self.sliderView2.notifyItemRemoved(atIndex: 0)
+//            }
+//        }
 //        DispatchQueue.init(label: "myBlock").asyncAfter(deadline: .now() + 3) {
 //            DispatchQueue.main.async {
 //

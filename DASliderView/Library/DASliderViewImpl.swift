@@ -145,11 +145,15 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
             itemAtIndex.previous?.next = itemAtIndex.next
             itemAtIndex.next?.previous = itemAtIndex.previous
             
+            
+            print("Removed item at index \(index)")
+            layoutManager.removeItem(at: index)
             items.remove(at: index)
+            //itemAtIndex.view.removeFromSuperview()
             items.filter { $0.position >= index }.forEach { $0.position -= 1 }
             //layoutManager.removeItem(at: index, animated: animated)
         } else {
-            print("Cannot insert identical DAView instance")
+            print("The element at index \(index) has not been deleted because it is present in the datasource.")
         }
     }
     
@@ -157,7 +161,16 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         let updatedView = dataSource!.viewForItem(at: index, recycling: items[index].wrappedDAView, sliderView: self)
         
         if updatedView !== items[index].wrappedDAView {
-            items[index] = DAItemView(daView: updatedView, position: index)
+            let oldItem = items[index]
+            let newItem = DAItemView(daView: updatedView, position: index)
+            
+            newItem.next = oldItem.next
+            newItem.previous = oldItem.previous
+            
+            items[index] = newItem
+            
+            addSubview(newItem.view)
+            layoutManager.changeItem(at: index, newItem: newItem, oldItem: oldItem)
         }
     }
     
