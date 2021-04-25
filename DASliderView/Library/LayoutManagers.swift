@@ -58,11 +58,10 @@ public /*abstract*/ class LayoutManager {
     
     func applyLayout() { fatalError("applyLayout not implemented") }
     func performScroll(to direction: DASliderViewDirection, ofQuantity quantity: Int = 1, animated: Bool = true) { fatalError("performScroll not implemented") }
-    //func invalidate(startingFrom index: Int) { }
-    func insertItem(at index: Int, animated: Bool = true) { }
-    func changeItem(at index: Int, newItem: DAItemView, oldItem: DAItemView, animated: Bool = true) { }
-    func removeItem(at index: Int, animated: Bool = true) { }
-    
+//    func insertItem(at index: Int, animated: Bool = true) { }
+//    func changeItem(at index: Int, newItem: DAItemView, oldItem: DAItemView, animated: Bool = true) { }
+//    func removeItem(at index: Int, animated: Bool = true) { }
+//
     func scrollTo(_ position: Int, animated: Bool = true) {
         performScroll(to: (position < self.position) ? .left : .right,
                       ofQuantity: abs(self.position - position), animated: animated)
@@ -147,99 +146,6 @@ public class LeftBoundItemLayoutManager : LayoutManager {
         
         position += direction.rawValue * quantity
         delegate?.sliderViewDidSelect(item: items[position].wrappedDAView, at: position, sliderView: sliderView)
-        //print("Scrolled to position: \(currentPosition)")
-    }
-    
-    override func insertItem(at index: Int, animated: Bool = true) {
-        print("Inserting item at position \(index)...")
-        
-        let item = items[index]
-        
-        let itemsStartingAtIndex = items.filter {
-            $0.position > index
-        }
-        
-        func moveViews() {
-            itemsStartingAtIndex.forEach {
-                $0.view.center.x += movingFactor(for: $0)
-                $0.saveCurrentLocation()
-            }
-        }
-        
-        let prevX = item.previous!.view.frame.origin.x
-        item.view.layer.opacity = 0.0
-        item.view.frame = CGRect(x: prevX + movingFactor(for: item.previous!), y: 0, width: item.width, height: item.height)
-        
-        if animated {
-            UIView.animate(withDuration: 0.2) { moveViews() }
-            UIView.animate(withDuration: 0.5, delay: 0.2, options: .beginFromCurrentState) {
-                item.view.layer.opacity = 1.0
-            }
-        } else {
-            moveViews()
-            item.view.layer.opacity = 1.0
-        }
-        
-        item.saveCurrentLocation()
-    }
-    
-    override func removeItem(at index: Int, animated: Bool = true) {
-        print("Inserting item at position \(index)...")
-        
-        let item = items[index]
-        
-        let itemsStartingAtIndex = items.filter {
-            $0.position > index
-        }
-        
-        func moveViews() {
-            itemsStartingAtIndex.forEach {
-                $0.view.center.x -= movingFactor(for: item)
-                $0.saveCurrentLocation()
-            }
-        }
-        
-        if animated {
-            UIView.animate(withDuration: 0.2, animations: {
-                item.view.layer.opacity = 0
-            }, completion: { (res) in
-                item.view.removeFromSuperview()
-            })
-            UIView.animate(withDuration: 0.2, delay: 0.5) { moveViews() }
-        } else {
-            moveViews()
-            item.view.layer.opacity = 0
-            item.view.removeFromSuperview()
-        }
-        
-        
-    }
-    
-    
-    override func changeItem(at index: Int, newItem: DAItemView, oldItem: DAItemView, animated: Bool = true) {
-        
-        let oldFrame = oldItem.view.frame
-        newItem.view.frame = oldFrame
-        newItem.view.layer.opacity = 0
-        
-        if animated {
-            UIView.animate(withDuration: 0.2) {
-                oldItem.view.layer.opacity = 0
-            } completion: { result in
-                oldItem.view.removeFromSuperview()
-            }
-
-            UIView.animate(withDuration: 0.2, delay: 0.2) {
-                newItem.view.layer.opacity = 1
-            }
-            
-        } else {
-            newItem.view.layer.opacity = 1
-            oldItem.view.removeFromSuperview()
-        }
-        
-        newItem.saveCurrentLocation()
-        
     }
 }
 
@@ -320,6 +226,96 @@ public class CenteredItemLayoutManager : LayoutManager {
     }
     
 }
+
+//    override func insertItem(at index: Int, animated: Bool = true) {
+//        print("Inserting item at position \(index)...")
+//
+//        let item = items[index]
+//
+//        let itemsStartingAtIndex = items.filter {
+//            $0.position > index
+//        }
+//
+//        func moveViews() {
+//            itemsStartingAtIndex.forEach {
+//                $0.view.center.x += movingFactor(for: $0)
+//                $0.saveCurrentLocation()
+//            }
+//        }
+//
+//        let prevX = item.previous!.view.frame.origin.x
+//        item.view.layer.opacity = 0.0
+//        item.view.frame = CGRect(x: prevX + movingFactor(for: item.previous!), y: 0, width: item.width, height: item.height)
+//
+//        if animated {
+//            UIView.animate(withDuration: 0.2) { moveViews() }
+//            UIView.animate(withDuration: 0.5, delay: 0.2, options: .beginFromCurrentState) {
+//                item.view.layer.opacity = 1.0
+//            }
+//        } else {
+//            moveViews()
+//            item.view.layer.opacity = 1.0
+//        }
+//
+//        item.saveCurrentLocation()
+//    }
+//
+//    override func removeItem(at index: Int, animated: Bool = true) {
+//        print("Inserting item at position \(index)...")
+//
+//        let item = items[index]
+//
+//        let itemsStartingAtIndex = items.filter {
+//            $0.position > index
+//        }
+//
+//        func moveViews() {
+//            itemsStartingAtIndex.forEach {
+//                $0.view.center.x -= movingFactor(for: item)
+//                $0.saveCurrentLocation()
+//            }
+//        }
+//
+//        if animated {
+//            UIView.animate(withDuration: 0.2, animations: {
+//                item.view.layer.opacity = 0
+//            }, completion: { (res) in
+//                item.view.removeFromSuperview()
+//            })
+//            UIView.animate(withDuration: 0.2, delay: 0.5) { moveViews() }
+//        } else {
+//            moveViews()
+//            item.view.layer.opacity = 0
+//            item.view.removeFromSuperview()
+//        }
+//    }
+//
+//    override func changeItem(at index: Int, newItem: DAItemView, oldItem: DAItemView, animated: Bool = true) {
+//
+//        let oldFrame = oldItem.view.frame
+//        newItem.view.frame = oldFrame
+//        newItem.view.layer.opacity = 0
+//
+//        if animated {
+//            UIView.animate(withDuration: 0.2) {
+//                oldItem.view.layer.opacity = 0
+//            } completion: { result in
+//                oldItem.view.removeFromSuperview()
+//            }
+//
+//            UIView.animate(withDuration: 0.2, delay: 0.2) {
+//                newItem.view.layer.opacity = 1
+//            }
+//
+//        } else {
+//            newItem.view.layer.opacity = 1
+//            oldItem.view.removeFromSuperview()
+//        }
+//
+//        newItem.saveCurrentLocation()
+//
+//    }
+
 
 // dead in tombstone
 

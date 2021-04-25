@@ -99,7 +99,7 @@ class ViewController: UIViewController, DASliderViewDataSouce, DASliderViewDeleg
                 self.images.insert(UIImage(named: "b3_ds.jpg"), at: 1)
                 print("Adding item at position 1")
                 //self.sliderView2.reloadData()
-                self.sliderView2.notifyItemInserted(atIndex: 1)
+              //  self.sliderView2.notifyItemInserted(atIndex: 1)
             }
         }
         

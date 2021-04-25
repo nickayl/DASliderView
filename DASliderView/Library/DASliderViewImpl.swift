@@ -96,83 +96,83 @@ public class DASliderView : UIView, UIGestureRecognizerDelegate {
         self.addSubview(itemView.view)
     }
     
-    public func notifyItemInserted(atIndex index: Int, animated: Bool = true) {
-        
-        if dataSource!.numberOfItems(of: self) != items.count + 1 {
-            print("DASliderView WARNING: No new item detected")
-            return
-        } else if index < 0 || index > items.count {
-            print("Cannot insert item at index \(index): It must be in the range 0 ... numberOfItems. If you are adding more than one item, use reloadData()")
-        }
-        
-        let view = dataSource!.viewForItem(at: index, recycling: items[index].wrappedDAView, sliderView: self)
-        
-        if view != items[index].wrappedDAView {
-            let itemView = DAItemView(daView: view, position: index)
-            
-            if index > 0 {
-                itemView.previous = items[index-1]
-                items[index-1].next = itemView
-            }
-            if index < items.count {
-                itemView.next = items[index]
-                items[index].previous = itemView
-            }
-            
-            items.filter { $0.position >= index }.forEach { $0.position += 1 }
-            insertView(atPosition: index, itemView: itemView)
-            layoutManager.insertItem(at: index, animated: animated)
-        } else {
-            print("Cannot insert identical DAView instance")
-        }
-        
-    }
-    
-    public func notifyItemRemoved(atIndex index: Int) {
-        if dataSource!.numberOfItems(of: self) != items.count - 1 {
-            print("DASliderView WARNING: No removed item detected. Please use reloadData() for radical changes to the dataset.")
-            // reloadData()
-            return
-        } else if isOutOfBounds(index) {
-            print("Index oout of ranges!")
-        }
-        
-        let view = dataSource!.viewForItem(at: index, recycling: nil, sliderView: self)
-        let itemAtIndex = items[index]
-        
-        if itemAtIndex.wrappedDAView != view {
-            
-            itemAtIndex.previous?.next = itemAtIndex.next
-            itemAtIndex.next?.previous = itemAtIndex.previous
-            
-            
-            print("Removed item at index \(index)")
-            layoutManager.removeItem(at: index)
-            items.remove(at: index)
-            //itemAtIndex.view.removeFromSuperview()
-            items.filter { $0.position >= index }.forEach { $0.position -= 1 }
-            //layoutManager.removeItem(at: index, animated: animated)
-        } else {
-            print("The element at index \(index) has not been deleted because it is present in the datasource.")
-        }
-    }
-    
-    public func notifyItemChanged(atIndex index: Int) {
-        let updatedView = dataSource!.viewForItem(at: index, recycling: items[index].wrappedDAView, sliderView: self)
-        
-        if updatedView !== items[index].wrappedDAView {
-            let oldItem = items[index]
-            let newItem = DAItemView(daView: updatedView, position: index)
-            
-            newItem.next = oldItem.next
-            newItem.previous = oldItem.previous
-            
-            items[index] = newItem
-            
-            addSubview(newItem.view)
-            layoutManager.changeItem(at: index, newItem: newItem, oldItem: oldItem)
-        }
-    }
+//    public func notifyItemInserted(atIndex index: Int, animated: Bool = true) {
+//        
+//        if dataSource!.numberOfItems(of: self) != items.count + 1 {
+//            print("DASliderView WARNING: No new item detected")
+//            return
+//        } else if index < 0 || index > items.count {
+//            print("Cannot insert item at index \(index): It must be in the range 0 ... numberOfItems. If you are adding more than one item, use reloadData()")
+//        }
+//        
+//        let view = dataSource!.viewForItem(at: index, recycling: items[index].wrappedDAView, sliderView: self)
+//        
+//        if view != items[index].wrappedDAView {
+//            let itemView = DAItemView(daView: view, position: index)
+//            
+//            if index > 0 {
+//                itemView.previous = items[index-1]
+//                items[index-1].next = itemView
+//            }
+//            if index < items.count {
+//                itemView.next = items[index]
+//                items[index].previous = itemView
+//            }
+//            
+//            items.filter { $0.position >= index }.forEach { $0.position += 1 }
+//            insertView(atPosition: index, itemView: itemView)
+//            layoutManager.insertItem(at: index, animated: animated)
+//        } else {
+//            print("Cannot insert identical DAView instance")
+//        }
+//        
+//    }
+//    
+//    public func notifyItemRemoved(atIndex index: Int) {
+//        if dataSource!.numberOfItems(of: self) != items.count - 1 {
+//            print("DASliderView WARNING: No removed item detected. Please use reloadData() for radical changes to the dataset.")
+//            // reloadData()
+//            return
+//        } else if isOutOfBounds(index) {
+//            print("Index oout of ranges!")
+//        }
+//        
+//        let view = dataSource!.viewForItem(at: index, recycling: nil, sliderView: self)
+//        let itemAtIndex = items[index]
+//        
+//        if itemAtIndex.wrappedDAView != view {
+//            
+//            itemAtIndex.previous?.next = itemAtIndex.next
+//            itemAtIndex.next?.previous = itemAtIndex.previous
+//            
+//            
+//            print("Removed item at index \(index)")
+//            layoutManager.removeItem(at: index)
+//            items.remove(at: index)
+//            //itemAtIndex.view.removeFromSuperview()
+//            items.filter { $0.position >= index }.forEach { $0.position -= 1 }
+//            //layoutManager.removeItem(at: index, animated: animated)
+//        } else {
+//            print("The element at index \(index) has not been deleted because it is present in the datasource.")
+//        }
+//    }
+//    
+//    public func notifyItemChanged(atIndex index: Int) {
+//        let updatedView = dataSource!.viewForItem(at: index, recycling: items[index].wrappedDAView, sliderView: self)
+//        
+//        if updatedView !== items[index].wrappedDAView {
+//            let oldItem = items[index]
+//            let newItem = DAItemView(daView: updatedView, position: index)
+//            
+//            newItem.next = oldItem.next
+//            newItem.previous = oldItem.previous
+//            
+//            items[index] = newItem
+//            
+//            addSubview(newItem.view)
+//            layoutManager.changeItem(at: index, newItem: newItem, oldItem: oldItem)
+//        }
+//    }
     
     public func setPosition(newPosition: Int, animated: Bool = true) throws {
         
