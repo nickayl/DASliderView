@@ -63,8 +63,8 @@ internal class DAItemView : NSObject {
     // private properties
     internal private(set) var location: CGPoint = .zero
     
-    internal var previous: DAItemView?
-    internal var next: DAItemView?
+//    internal var previous: DAItemView?
+//    internal var next: DAItemView?
     
     internal init(daView: DAView, position: Int) {
         self.wrappedDAView = daView
